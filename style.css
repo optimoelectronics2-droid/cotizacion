@@ -166,7 +166,6 @@ tr:nth-child(even){
 }
 
 /* Para impresión de la cotización */
-
 @media print{
   body{
     background:#fff;
@@ -182,6 +181,4 @@ tr:nth-child(even){
     display:none !important;
   }
 }
-
-
 
