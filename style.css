@@ -166,18 +166,31 @@ tr:nth-child(even){
 }
 
 /* Para impresión de la cotización */
-@media print{
-  body{
-    background:#fff;
-    color:#000;
-    padding:0;
+@media print {
+  @page {
+    size: 8.5in 11in; /* Carta (Letter) */
+    margin: 10mm;     /* Márgenes limpios y profesionales */
   }
-  .card{
-    box-shadow:none;
-    border:none;
-    border-radius:0;
+
+  body {
+    background: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
-  .btn, .btn-secondary, .btn-danger, a{
-    display:none !important;
+
+  .sidebar {
+    display: none !important; /* No imprimir menú */
+  }
+
+  .main {
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .btn,
+  .btn-secondary,
+  .btn-danger {
+    display: none !important; /* Ocultar botones en impresión */
   }
 }
+
