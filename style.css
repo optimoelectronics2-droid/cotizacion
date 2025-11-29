@@ -169,72 +169,45 @@ tr:nth-child(even){
 
 @media print {
   @page {
-    size: 8.5in 11in;        /* Hoja carta real */
-    margin: 12mm;            /* Márgenes perfectos (no muy grandes ni pequeños) */
+    size: 8.5in 11in;   /* Ajuste a hoja carta */
+    margin: 10mm;       /* Márgenes adecuados */
   }
 
   body {
-    background: #ffffff !important;   /* Fondo blanco real */
-    color: #000000 !important;         /* Texto negro */
+    background:#fff !important;
+    color:#000 !important;
+    padding:0 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-    margin: 0 !important;
-    padding: 0 !important;
   }
 
-  /* Quitar el menú lateral */
   .sidebar {
-    display: none !important;
+    display:none !important;
   }
 
-  /* Restaurar factura limpia y clara como antes */
-  .main {
-    background: #ffffff !important;     /* Fondo blanco (como en la factura original) */
-    border: none !important;
-    box-shadow: none !important;
-    padding: 10mm !important;
-    width: 100% !important;
-  }
-
-  /* Cartas blancas claras como antes */
   .card {
-    background: #ffffff !important;
-    border: 1px solid #cccccc !important;
-    box-shadow: none !important;
-    color: #000000 !important;
-    padding: 10px !important;
+    box-shadow:none !important;
+    border:none !important;
+    border-radius:0 !important;
+    background:#fff !important;   /* Igual que la primera vez */
+    color:#000 !important;
   }
 
-  h1, h2, h3, label, div, span, td, th, p {
-    color: #000000 !important;
+  /* Mantener todo limpio como la primera impresión */
+  .main {
+    background:#fff !important;
+    box-shadow:none !important;
+    border:none !important;
   }
 
-  table {
-    width: 100% !important;
-    border-collapse: collapse;
-    background: #ffffff !important;
+  table, tr, td, th {
+    background:#fff !important;
+    color:#000 !important;
+    border-color:#000 !important;
   }
 
-  th, td {
-    border-bottom: 1px solid #cccccc !important;
-  }
-
-  /* Ocultar botones */
-  .btn,
-  .btn-secondary,
-  .btn-danger {
-    display: none !important;
+  /* Eliminar botones como siempre */
+  .btn, .btn-secondary, .btn-danger, a {
+    display:none !important;
   }
 }
-
-
-
-   
-  
-
-
-
-
-
-
-
