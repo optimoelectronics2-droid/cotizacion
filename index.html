@@ -8,7 +8,6 @@
   <!-- Opcional: tu CSS externo -->
   <link rel="stylesheet" href="style.css">
 
-  <!-- Estilos principales del dashboard -->
   <style>
     body{
       background:#020617;
@@ -26,10 +25,9 @@
       margin:0 auto;
     }
 
-    /* SIDEBAR (ADMIN) */
+    /* SIDEBAR */
     .sidebar{
       width:320px;
-      max-width:100%;
       background:linear-gradient(180deg,#064e3b,#020617);
       border-radius:20px;
       padding:16px;
@@ -37,21 +35,8 @@
       border:1px solid #0d9488;
       position:sticky;
       top:16px;
-      align-self:flex-start;
     }
-    .sidebar h1{
-      margin:0 0 4px;
-      font-size:20px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-    .sidebar .brand-badge{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      color:#6ee7b7;
-    }
+
     .sidebar-section{
       background:rgba(15,23,42,0.85);
       border-radius:14px;
@@ -59,12 +44,7 @@
       padding:12px;
       margin-top:12px;
     }
-    .sidebar label{
-      font-size:12px;
-      color:#a7f3d0;
-      display:block;
-      margin-top:6px;
-    }
+
     .sidebar input,
     .sidebar textarea,
     .sidebar select{
@@ -75,30 +55,18 @@
       border:1px solid #1e293b;
       background:#020617;
       color:#e5e7eb;
-      font-size:13px;
-      outline:none;
-    }
-    .sidebar input:focus,
-    .sidebar textarea:focus,
-    .sidebar select:focus{
-      border-color:#10b981;
-      box-shadow:0 0 0 1px rgba(16,185,129,.4);
-    }
-    .small{
-      font-size:11px;
-      color:#9ca3af;
     }
 
-    /* MAIN (COTIZADOR / FACTURA) */
+    /* MAIN */
     .main{
       flex:1;
-      min-width:0;
       background:#020617;
       border-radius:20px;
       border:1px solid rgba(148,163,184,.5);
       box-shadow:0 18px 40px rgba(0,0,0,0.65);
       padding:16px;
     }
+
     .card{
       background:#020617;
       border-radius:14px;
@@ -106,21 +74,7 @@
       padding:12px;
       margin-bottom:12px;
     }
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .row > div{
-      flex:1;
-      min-width:150px;
-    }
-    .card label{
-      font-size:12px;
-      display:block;
-      margin-bottom:2px;
-      color:#9ca3af;
-    }
+
     .card input,
     .card textarea,
     .card select{
@@ -130,76 +84,56 @@
       border:1px solid #1f2937;
       background:#020617;
       color:#e5e7eb;
-      font-size:13px;
-      outline:none;
-    }
-    .card input:focus,
-    .card textarea:focus,
-    .card select:focus{
-      border-color:#10b981;
-      box-shadow:0 0 0 1px rgba(16,185,129,.4);
     }
 
-    /* Botones */
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
     .btn{
       border:none;
       border-radius:999px;
       padding:7px 14px;
       font-size:13px;
-      font-weight:500;
       cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:6px;
       background:#10b981;
       color:#022c22;
-      box-shadow:0 10px 25px rgba(16,185,129,0.45);
-      transition:.15s;
     }
-    .btn:hover{
-      transform:translateY(-1px);
-      box-shadow:0 16px 35px rgba(16,185,129,0.55);
-    }
+
     .btn-secondary{
+      border:1px solid #374151;
+      border-radius:999px;
+      padding:7px 14px;
+      font-size:13px;
+      cursor:pointer;
       background:#111827;
       color:#e5e7eb;
-      box-shadow:none;
-      border:1px solid #374151;
     }
-    .btn-secondary:hover{
-      background:#020617;
-    }
+
     .btn-danger{
-      background:#7f1d1d;
-      color:#fecaca;
       border:1px solid #fecaca;
-      padding:4px 8px;
       border-radius:999px;
+      padding:4px 8px;
       font-size:11px;
       cursor:pointer;
+      background:#7f1d1d;
+      color:#fecaca;
     }
 
     table{
       width:100%;
       border-collapse:collapse;
       font-size:12px;
-      margin-top:6px;
     }
-    th,td{
-      padding:6px 8px;
+
+    th, td{
+      padding:6px;
       border-bottom:1px solid #111827;
       text-align:left;
     }
-    th{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.06em;
-      color:#9ca3af;
-    }
-    tr:nth-child(even){
-      background:#020617;
-    }
+
     .text-right{text-align:right;}
     .text-center{text-align:center;}
 
@@ -214,284 +148,315 @@
       display:none;
     }
 
-    @media(max-width:900px){
-      .layout{
-        flex-direction:column;
-      }
-      .sidebar{
-        position:static;
-        width:100%;
-      }
-    }
-
+    /* IMPRESIÓN */
     @media print{
+      @page{
+        size: 8.5in 11in;
+        margin: 10mm;
+      }
+
       body{
-        background:#fff;
-        color:#000;
-        padding:0;
+        background:#fff !important;
+        color:#000 !important;
       }
+
       .sidebar{
-        display:none;
+        display:none !important;
       }
+
       .main{
-        border:none;
-        box-shadow:none;
+        background:#fff !important;
+        border:none !important;
+        box-shadow:none !important;
+        color:#000 !important;
       }
-      .btn,.btn-secondary,.btn-danger{
+
+      .card{
+        background:#fff !important;
+        border:1px solid #ccc !important;
+      }
+
+      table tr:nth-child(even){
+        background:#fff !important;
+      }
+
+      .btn, .btn-secondary, .btn-danger{
         display:none !important;
       }
     }
   </style>
 
-  <!-- Librería para Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
 <div class="layout">
 
-  <!-- ========================================================= -->
-  <!-- ====================== SIDEBAR ADMIN ===================== -->
-  <!-- ========================================================= -->
-  <aside class="sidebar">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div>
-        <h1>
-          <span style="display:inline-block;width:18px;height:18px;border-radius:8px;background:#10b981;box-shadow:0 0 18px rgba(16,185,129,0.9);"></span>
-          Trifusion
-        </h1>
-        <div class="brand-badge">Technologies — Panel</div>
-      </div>
-      <div class="small" style="text-align:right;">
-        Usuario:<br>
-        <span id="adminUserLabel" style="color:#bbf7d0;">Invitado</span>
-      </div>
+<!-- ====================== SIDEBAR ====================== -->
+<aside class="sidebar">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <h1>
+        <span style="display:inline-block;width:18px;height:18px;border-radius:8px;background:#10b981;"></span>
+        Trifusion
+      </h1>
+      <div class="brand-badge">Technologies — Panel</div>
+    </div>
+    <div class="small" style="text-align:right;">
+      Usuario:<br>
+      <span id="adminUserLabel" style="color:#bbf7d0;">Invitado</span>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginSection" class="sidebar-section">
+    <h3 style="margin-top:0;">Iniciar sesión</h3>
+    <p class="small">
+      Solo <strong>Trifusion0325</strong> puede editar productos y datos.<br>
+      Los clientes solo usan el cotizador.
+    </p>
+
+    <label for="username">Correo administrador</label>
+    <input id="username" type="email" placeholder="tu-correo-admin">
+
+    <label for="password">Contraseña</label>
+    <input id="password" type="password" placeholder="••••••••">
+
+    <button class="btn" style="margin-top:8px;width:100%;" onclick="login()">
+      Entrar
+    </button>
+  </div>
+
+  <!-- PANEL ADMIN -->
+  <div id="adminSection" style="display:none;">
+
+    <!-- Sesión activa -->
+    <div class="sidebar-section">
+      <h3 style="margin-top:0;">Sesión activa</h3>
+      <p class="small">Puedes administrar tienda, productos, Excel y ver cotizaciones.</p>
+      <button class="btn-secondary" style="width:100%;" onclick="logout()">Cerrar sesión</button>
     </div>
 
-    <!-- LOGIN -->
-    <div id="loginSection" class="sidebar-section">
-      <h3 style="margin-top:0;">Iniciar sesión</h3>
+    <!-- Datos tienda -->
+    <div class="sidebar-section">
+      <h3 style="margin-top:0;">Datos de la tienda</h3>
+
+      <label>Nombre tienda</label>
+      <input id="storeNameInput" type="text" placeholder="Trifusion Technologies">
+
+      <label>Teléfono / WhatsApp</label>
+      <input id="storePhoneInput" type="text" placeholder="829-872-5163">
+
+      <label>Dirección</label>
+      <input id="storeAddressInput" type="text" placeholder="Autopista de San Isidro">
+
+      <label>Logo (imagen)</label>
+      <input id="logoInput" type="file" accept="image/*" onchange="handleLogoUpload(event)">
+      <img id="logoPreview">
+
+      <button class="btn" style="margin-top:8px;width:100%;" onclick="guardarSettings()">
+        Guardar tienda
+      </button>
+    </div>
+
+    <!-- Productos -->
+    <div class="sidebar-section">
+      <h3 style="margin-top:0;">Productos</h3>
+
+      <label>Código (opcional)</label>
+      <input id="codigoProducto">
+
+      <label>Nombre</label>
+      <input id="nombreProducto">
+
+      <label>Precio (RD$)</label>
+      <input id="precioProducto" type="number" step="0.01">
+
+      <label>Descripción</label>
+      <input id="descripcionProducto">
+
+      <button class="btn" style="margin-top:8px;width:100%;" onclick="crearProducto()">
+        Agregar producto
+      </button>
+    </div>
+
+    <!-- Masivo Excel -->
+    <div class="sidebar-section">
+      <h3 style="margin-top:0;">Carga masiva (Excel)</h3>
+
       <p class="small">
-        Solo <strong>Trifusion0325</strong> puede editar productos y datos.<br>
-        Los clientes solo usan el cotizador.
+        Columnas: <strong>nombre</strong>, <strong>precio</strong>,
+        <strong>descripcion</strong>, opcional <strong>codigo</strong>.
       </p>
-      <label for="username">Correo administrador</label>
-      <input id="username" type="email" placeholder="tu-correo-admin">
 
-      <label for="password">Contraseña</label>
-      <input id="password" type="password" placeholder="••••••••">
-
-      <button class="btn" style="margin-top:8px;width:100%;" onclick="login()">Entrar</button>
+      <input id="excelInput" type="file" accept=".xlsx" onchange="procesarExcel(event)">
+      <p id="excelStatus" class="small" style="margin-top:6px;color:#67e8f9;"></p>
     </div>
 
-    <!-- PANEL ADMIN -->
-    <div id="adminSection" style="display:none;">
-      <!-- Sesión -->
-      <div class="sidebar-section">
-        <h3 style="margin-top:0;">Sesión activa</h3>
-        <p class="small">
-          Puedes administrar tienda, productos, Excel y ver cotizaciones.
-        </p>
-        <button class="btn-secondary" style="width:100%;" onclick="logout()">Cerrar sesión</button>
-      </div>
+    <!-- Lista productos -->
+    <div class="sidebar-section">
+      <h3 style="margin-top:0;">Productos cargados</h3>
 
-      <!-- Datos tienda -->
-      <div class="sidebar-section">
-        <h3 style="margin-top:0;">Datos de la tienda</h3>
-
-        <label for="storeNameInput">Nombre tienda</label>
-        <input id="storeNameInput" type="text" placeholder="Trifusion Technologies">
-
-        <label for="storePhoneInput">Teléfono / WhatsApp</label>
-        <input id="storePhoneInput" type="text" placeholder="829-872-5163">
-
-        <label for="storeAddressInput">Dirección</label>
-        <input id="storeAddressInput" type="text" placeholder="Autopista de San Isidro">
-
-        <label for="logoInput">Logo (imagen)</label>
-        <input id="logoInput" type="file" accept="image/*" onchange="handleLogoUpload(event)">
-
-        <img id="logoPreview" alt="Logo tienda">
-
-        <button class="btn" style="margin-top:8px;width:100%;" onclick="guardarSettings()">Guardar tienda</button>
-      </div>
-
-      <!-- Productos -->
-      <div class="sidebar-section">
-        <h3 style="margin-top:0;">Productos</h3>
-
-        <label for="codigoProducto">Código (opcional)</label>
-        <input id="codigoProducto">
-
-        <label for="nombreProducto">Nombre</label>
-        <input id="nombreProducto">
-
-        <label for="precioProducto">Precio (RD$)</label>
-        <input id="precioProducto" type="number" step="0.01">
-
-        <label for="descripcionProducto">Descripción</label>
-        <input id="descripcionProducto">
-
-        <button class="btn" style="margin-top:8px;width:100%;" onclick="crearProducto()">Agregar producto</button>
-      </div>
-
-      <!-- Excel -->
-      <div class="sidebar-section">
-        <h3 style="margin-top:0;">Carga masiva (Excel)</h3>
-        <p class="small">
-          Columnas: <strong>nombre</strong>, <strong>precio</strong>, <strong>descripcion</strong>, opcional <strong>codigo</strong>.
-        </p>
-        <input id="excelInput" type="file" accept=".xlsx" onchange="procesarExcel(event)">
-        <p id="excelStatus" class="small" style="margin-top:6px;color:#67e8f9;"></p>
-      </div>
-
-      <!-- Productos listados -->
-      <div class="sidebar-section">
-        <h3 style="margin-top:0;">Productos cargados</h3>
-        <div style="max-height:180px;overflow:auto;border-radius:10px;border:1px solid #111827;">
-          <table>
-            <thead>
+      <div style="max-height:180px;overflow:auto;border-radius:10px;border:1px solid #111827;">
+        <table>
+          <thead>
             <tr>
               <th>Nombre</th>
               <th class="text-right">Precio</th>
               <th class="text-center">Código</th>
               <th></th>
             </tr>
-            </thead>
-            <tbody id="tablaProductos"></tbody>
-          </table>
-        </div>
+          </thead>
+          <tbody id="tablaProductos"></tbody>
+        </table>
       </div>
+    </div>
 
-      <!-- Cotizaciones -->
-      <div class="sidebar-section">
-        <h3 style="margin-top:0;">Cotizaciones / Facturas recientes</h3>
-        <div style="max-height:180px;overflow:auto;border-radius:10px;border:1px solid #111827;">
-          <table>
-            <thead>
+    <!-- Cotizaciones recientes -->
+    <div class="sidebar-section">
+      <h3 style="margin-top:0;">Cotizaciones / Facturas recientes</h3>
+
+      <div style="max-height:180px;overflow:auto;border-radius:10px;border:1px solid #111827;">
+        <table>
+          <thead>
             <tr>
               <th>Cliente</th>
               <th>Tipo</th>
               <th class="text-right">Total</th>
             </tr>
-            </thead>
-            <tbody id="tablaQuotes"></tbody>
-          </table>
-        </div>
+          </thead>
+          <tbody id="tablaQuotes"></tbody>
+        </table>
       </div>
     </div>
-  </aside>
 
-  <!-- ========================================================= -->
-  <!-- =================== COTIZADOR / FACTURA ================= -->
-  <!-- ========================================================= -->
-  <main class="main">
+  </div> <!-- FIN ADMIN -->
+</aside>
 
-    <!-- Encabezado tienda -->
-    <div class="card">
-      <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
-        <div style="display:flex;gap:10px;align-items:center;">
-          <img id="logoFactura" alt="Logo factura">
+<!-- ====================== MAIN ====================== -->
+<main class="main">
+
+  <!-- Encabezado factura -->
+  <div class="card">
+    <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+
+      <div style="display:flex;gap:10px;align-items:center;">
+        <img id="logoFactura">
+        <div>
+          <h1 id="storeNameDisplay" style="margin:0;font-size:22px;">Trifusion Technologies</h1>
+          <div class="small">
+            WhatsApp: <span id="storePhoneDisplay">829-872-5163</span><br>
+            <span id="storeAddressDisplay">Autopista de San Isidro</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="small" style="text-align:right;">
+        <div id="modoTexto" style="font-weight:600;color:#10b981;">COTIZACIÓN</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Datos del cliente -->
+  <div class="card">
+    <h2 id="tituloDocumento" style="margin-top:0;">Cotización</h2>
+
+    <!-- Sección factura para admin -->
+    <div id="facturaInfo" style="display:none;margin-bottom:12px;">
+      <div class="card" style="background:rgba(16,185,129,0.08);border-color:#10b981;">
+        <div class="row">
           <div>
-            <h1 id="storeNameDisplay" style="margin:0;font-size:22px;">Trifusion Technologies</h1>
-            <div class="small">
-              WhatsApp: <span id="storePhoneDisplay">829-872-5163</span><br>
-              <span id="storeAddressDisplay">Autopista de San Isidro</span>
-            </div>
+            <label>Número de factura</label>
+            <input id="facturaNumero" type="text" readonly style="font-weight:600;color:#10b981;">
+          </div>
+
+          <div>
+            <label>Método de pago</label>
+            <select id="metodoPago">
+              <option value="EFECTIVO">Efectivo</option>
+              <option value="TRANSFERENCIA">Transferencia</option>
+              <option value="TARJETA">Tarjeta</option>
+              <option value="CREDITO">Crédito a cliente</option>
+            </select>
           </div>
         </div>
-        <div class="small" style="text-align:right;">
-          <div id="modoTexto" style="font-weight:600;color:#10b981;">COTIZACIÓN</div>
-          <div> <strong></strong>.</div>
-        </div>
+
+        <label>Nota interna</label>
+        <textarea id="notaInterna" rows="2"></textarea>
       </div>
     </div>
 
-    <!-- Datos cliente -->
-    <div class="card">
-      <h2 id="tituloDocumento" style="margin-top:0;">Cotización</h2>
-
-      <div id="facturaInfo" style="display:none;margin-bottom:12px;">
-        <div class="card" style="background:rgba(16,185,129,0.08);border-color:#10b981;">
-          <div class="row">
-            <div>
-              <label>Número de factura</label>
-              <input id="facturaNumero" type="text" readonly style="font-weight:600;color:#10b981;">
-            </div>
-            <div>
-              <label>Método de pago</label>
-              <select id="metodoPago">
-                <option value="EFECTIVO">Efectivo</option>
-                <option value="TRANSFERENCIA">Transferencia</option>
-                <option value="TARJETA">Tarjeta</option>
-                <option value="CREDITO">Crédito a cliente</option>
-              </select>
-            </div>
-          </div>
-          <label>Nota / Comentario interno</label>
-          <textarea id="notaInterna" rows="2" style="resize:vertical;"></textarea>
-        </div>
+    <div class="row">
+      <div>
+        <label>Cliente</label>
+        <input id="clienteNombre" type="text">
       </div>
 
-      <div class="row">
-        <div>
-          <label for="clienteNombre">Cliente</label>
-          <input id="clienteNombre" type="text">
-        </div>
-        <div>
-          <label for="clienteDocumento">Documento</label>
-          <input id="clienteDocumento" type="text" placeholder="RNC / Cédula">
-        </div>
-      </div>
-
-      <div class="row">
-        <div>
-          <label for="clienteTelefono">Teléfono</label>
-          <input id="clienteTelefono" type="text">
-        </div>
-        <div>
-          <label for="clienteDireccion">Dirección</label>
-          <input id="clienteDireccion" type="text">
-        </div>
-        <div style="max-width:170px;">
-          <label for="fechaFactura">Fecha</label>
-          <input id="fechaFactura" type="date">
-        </div>
+      <div>
+        <label>Documento</label>
+        <input id="clienteDocumento" type="text" placeholder="RNC / Cédula">
       </div>
     </div>
 
-    <!-- Selección productos -->
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-        <h3 style="margin:0;">Productos</h3>
-        <label style="font-size:12px;display:flex;align-items:center;gap:4px;color:#9ca3af;">
-          <input type="checkbox" id="aplicarItbis" checked style="width:auto;"> Aplicar ITBIS 18%
-        </label>
+    <div class="row">
+      <div>
+        <label>Teléfono</label>
+        <input id="clienteTelefono" type="text">
       </div>
 
-      <div class="row" style="margin-top:8px;">
-        <div>
-          <label for="productoSeleccionado">Producto</label>
-          <select id="productoSeleccionado">
-            <option value="">-- Selecciona un producto --</option>
-          </select>
-        </div>
-        <div style="max-width:140px;">
-          <label for="cantidadProducto">Cantidad</label>
-          <input id="cantidadProducto" type="number" min="1" value="1">
-        </div>
-        <div style="max-width:160px;align-self:flex-end;">
-          <button class="btn" style="width:100%;" onclick="agregarALaFactura()">Agregar</button>
-        </div>
+      <div>
+        <label>Dirección</label>
+        <input id="clienteDireccion" type="text">
+      </div>
+
+      <div style="max-width:170px;">
+        <label>Fecha</label>
+        <input id="fechaFactura" type="date">
       </div>
     </div>
+  </div>
 
-    <!-- Detalle -->
-    <div class="card">
-      <h3 style="margin-top:0;">Detalle</h3>
-      <div style="max-height:260px;overflow:auto;border-radius:12px;border:1px solid #111827;">
-        <table>
-          <thead>
+  <!-- Selección de productos -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+      <h3 style="margin:0;">Productos</h3>
+
+      <label style="font-size:12px;display:flex;align-items:center;gap:4px;color:#9ca3af;">
+        <input type="checkbox" id="aplicarItbis" checked style="width:auto;">
+        Aplicar ITBIS 18%
+      </label>
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <div>
+        <label>Producto</label>
+        <select id="productoSeleccionado">
+          <option value="">-- Selecciona un producto --</option>
+        </select>
+      </div>
+
+      <div style="max-width:140px;">
+        <label>Cantidad</label>
+        <input id="cantidadProducto" type="number" min="1" value="1">
+      </div>
+
+      <div style="max-width:160px;align-self:flex-end;">
+        <button class="btn" style="width:100%;" onclick="agregarALaFactura()">
+          Agregar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detalle de productos -->
+  <div class="card">
+    <h3 style="margin-top:0;">Detalle</h3>
+
+    <div style="max-height:260px;overflow:auto;border-radius:12px;border:1px solid #111827;">
+      <table>
+        <thead>
           <tr>
             <th>Producto</th>
             <th class="text-center">Cant.</th>
@@ -499,603 +464,743 @@
             <th class="text-right">Importe</th>
             <th></th>
           </tr>
-          </thead>
-          <tbody id="tablaFactura"></tbody>
-        </table>
-      </div>
-
-      <div style="margin-top:10px;font-size:14px;">
-        <div class="text-right">Subtotal: <span id="subtotalFactura">RD$ 0.00</span></div>
-        <div class="text-right">ITBIS: <span id="itbisFactura">RD$ 0.00</span></div>
-        <div class="text-right" style="font-weight:600;color:#10b981;">Total: <span id="totalFactura">RD$ 0.00</span></div>
-      </div>
-
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;">
-        <button class="btn-secondary" onclick="nuevaFactura()">Nueva</button>
-        <button class="btn-secondary" id="btnGuardar" onclick="guardarEnFirestore()">Guardar cotización</button>
-        <button class="btn" onclick="window.print()">Imprimir / PDF</button>
-      </div>
+        </thead>
+        <tbody id="tablaFactura"></tbody>
+      </table>
     </div>
 
-  </main>
-</div>
+    <div style="margin-top:10px;font-size:14px;">
+      <div class="text-right">Subtotal: <span id="subtotalFactura">RD$ 0.00</span></div>
+      <div class="text-right">ITBIS: <span id="itbisFactura">RD$ 0.00</span></div>
+      <div class="text-right">Envío: <span id="totalEnvio">RD$ 0.00</span></div>
+      <div class="text-right" style="font-weight:600;color:#10b981;">Total: <span id="totalFactura">RD$ 0.00</span></div>
+    </div>
 
-<!-- ========================================================= -->
-<!-- ================== FIREBASE Y LÓGICA ==================== -->
-<!-- ========================================================= -->
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap;">
+      <button class="btn-secondary" onclick="nuevaFactura()">Nueva</button>
+      <button class="btn-secondary" id="btnGuardar" onclick="guardarEnFirestore()">Guardar cotización</button>
+      <button class="btn" onclick="window.print()">Imprimir / PDF</button>
+    </div>
+  </div>
 
+  <!-- ============================
+       CÁLCULO DE ENVÍO AUTOMÁTICO
+       ============================ -->
+  <div class="card">
+    <h3 style="margin-top:0;">Costo de envío (ubicación automática)</h3>
+
+    <button onclick="compartirUbicacion()" class="btn" style="margin-top:10px;">
+      📍 Compartir ubicación actual
+    </button>
+
+    <p id="estadoEnvio" class="small" style="margin-top:10px;color:#38bdf8;">
+      Esperando ubicación...
+    </p>
+
+    <div style="margin-top:10px;font-size:14px;">
+      <div class="text-right">Envío calculado: <span id="totalEnvioDetalle">RD$ 0.00</span></div>
+    </div>
+  </div>
+
+</main>
+</div> <!-- layout -->
+
+<!-- ========================= FIREBASE ========================= -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
-<!-- Tu archivo con las llaves reales -->
+<!-- Archivo con tus llaves reales -->
 <script src="firebase-config.js"></script>
 
 <script>
-  // =================== VARIABLES GLOBALES ===================
-  let productos = [];
-  let itemsFactura = [];
-  let isAdmin = false; // true cuando el usuario está logueado
+/* ==========================================================
+   VARIABLES GLOBALES
+========================================================== */
+let productos = [];
+let itemsFactura = [];
+let isAdmin = false;
+let costoEnvio = 0;
 
-  function formatearRD(v){
-    const n = Number(v)||0;
-    return "RD$ " + n.toFixed(2);
+// Coordenadas de tu tienda (Prado Oriental, Santo Domingo Este)
+const STORE_LAT = 18.4983941;
+const STORE_LNG = -69.7898992;
+const COSTO_POR_KM = 23; // RD$ por km
+
+function formatearRD(v){
+  const n = Number(v)||0;
+  return "RD$ " + n.toFixed(2);
+}
+
+/* ==========================================================
+   GEOLOCALIZACIÓN Y ENVÍO
+========================================================== */
+function calcularDistanciaKm(lat1, lon1, lat2, lon2){
+  const R = 6371; // km
+  const dLat = (lat2 - lat1) * Math.PI/180;
+  const dLon = (lon2 - lon1) * Math.PI/180;
+  const a =
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+function compartirUbicacion(){
+  const estado = document.getElementById("estadoEnvio");
+  if(!navigator.geolocation){
+    estado.textContent = "Tu navegador no soporta compartir ubicación.";
+    estado.style.color = "#f97373";
+    return;
   }
 
-  // =================== SETTINGS PÚBLICOS ====================
-  async function cargarSettingsPublic(){
-    try{
-      const doc = await db.collection("settings").doc("principal").get();
-      if(doc.exists){
-        const d = doc.data();
-        document.getElementById("storeNameDisplay").textContent   = d.store_name || "Trifusion Technologies";
-        document.getElementById("storePhoneDisplay").textContent  = d.phone      || "829-872-5163";
-        document.getElementById("storeAddressDisplay").textContent= d.address    || "Autopista de San Isidro";
+  estado.textContent = "Obteniendo ubicación...";
+  estado.style.color = "#38bdf8";
 
-        if(d.logo){
-          const img = document.getElementById("logoFactura");
-          img.src = d.logo;
-          img.style.display = "block";
-        }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      const distanciaKm = calcularDistanciaKm(STORE_LAT, STORE_LNG, lat, lng);
+      costoEnvio = Math.round(distanciaKm * COSTO_POR_KM);
+
+      if(costoEnvio < 0 || !isFinite(costoEnvio)) costoEnvio = 0;
+
+      estado.textContent =
+        `Distancia aprox: ${distanciaKm.toFixed(1)} km • Envío: ${formatearRD(costoEnvio)}`;
+      estado.style.color = "#22c55e";
+
+      actualizarTotales();
+    },
+    err => {
+      console.error(err);
+      if(err.code === err.PERMISSION_DENIED){
+        estado.textContent = "Debes permitir acceso a tu ubicación para calcular el envío.";
+      }else{
+        estado.textContent = "No se pudo obtener tu ubicación. Intenta de nuevo.";
       }
-    }catch(e){
-      console.error("Error settings pública:", e);
+      estado.style.color = "#f97373";
+    },
+    { enableHighAccuracy:true, timeout:15000, maximumAge:0 }
+  );
+}
+
+/* ==========================================================
+   CARGAR SETTINGS PÚBLICOS
+========================================================== */
+async function cargarSettingsPublic(){
+  try{
+    const doc = await db.collection("settings").doc("principal").get();
+    if(doc.exists){
+      const d = doc.data();
+      document.getElementById("storeNameDisplay").textContent = d.store_name || "Trifusion Technologies";
+      document.getElementById("storePhoneDisplay").textContent = d.phone || "829-872-5163";
+      document.getElementById("storeAddressDisplay").textContent = d.address || "Autopista de San Isidro";
+
+      if(d.logo){
+        const img = document.getElementById("logoFactura");
+        img.src = d.logo;
+        img.style.display = "block";
+      }
     }
+  }catch(e){
+    console.error("Error settings pública:", e);
   }
+}
 
-  async function cargarProductosPublic(){
-    try{
-      const snap = await db.collection("products").orderBy("createdAt","desc").get();
-      productos = [];
-      const select = document.getElementById("productoSeleccionado");
-      select.innerHTML = "<option value=''>-- Selecciona un producto --</option>";
+/* ==========================================================
+   CARGAR PRODUCTOS PÚBLICOS
+========================================================== */
+async function cargarProductosPublic(){
+  try{
+    const snap = await db.collection("products").orderBy("createdAt","desc").get();
+    productos = [];
+    const select = document.getElementById("productoSeleccionado");
+    select.innerHTML = "<option value=''>-- Selecciona un producto --</option>";
 
-      snap.forEach(doc=>{
-        const d = doc.data();
-        const p = {
-          id: doc.id,
-          name: d.name,
-          price: Number(d.price)||0,
-          description: d.description || "",
-          code: d.code || ""
-        };
-        productos.push(p);
+    snap.forEach(doc=>{
+      const d = doc.data();
+      const p = {
+        id: doc.id,
+        name: d.name,
+        price: Number(d.price)||0,
+        description: d.description || "",
+        code: d.code || ""
+      };
+      productos.push(p);
 
-        const op = document.createElement("option");
-        op.value = p.id;
-        op.textContent = `${p.name} (RD$ ${p.price.toFixed(2)})`;
-        select.appendChild(op);
-      });
-    }catch(e){
-      console.error("Error cargando productos:", e);
-    }
+      const op = document.createElement("option");
+      op.value = p.id;
+      op.textContent = `${p.name} (RD$ ${p.price.toFixed(2)})`;
+      select.appendChild(op);
+    });
+  }catch(e){
+    console.error("Error cargando productos:", e);
   }
+}
 
-  // =================== COTIZADOR / FACTURA ==================
-  function agregarALaFactura(){
-    const id  = document.getElementById("productoSeleccionado").value;
-    const qty = Number(document.getElementById("cantidadProducto").value);
+/* ==========================================================
+   AGREGAR PRODUCTOS A LA FACTURA
+========================================================== */
+function agregarALaFactura(){
+  const id  = document.getElementById("productoSeleccionado").value;
+  const qty = Number(document.getElementById("cantidadProducto").value);
 
-    if(!id){ alert("Selecciona un producto."); return; }
-    if(!qty || qty<=0){ alert("Cantidad inválida."); return; }
+  if(!id){ alert("Selecciona un producto."); return; }
+  if(!qty || qty<=0){ alert("Cantidad inválida."); return; }
 
-    const p = productos.find(x=>x.id===id);
-    if(!p){ return; }
+  const p = productos.find(x=>x.id===id);
+  if(!p) return;
 
-    const existente = itemsFactura.find(i=>i.id===id);
-    if(existente){
-      existente.quantity += qty;
-    }else{
-      itemsFactura.push({
-        id,
-        name: p.name,
-        price: p.price,
-        quantity: qty
-      });
-    }
-    renderFactura();
-    actualizarTotales();
-  }
-
-  function renderFactura(){
-    const tbody = document.getElementById("tablaFactura");
-    tbody.innerHTML = "";
-
-    if(!itemsFactura.length){
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="5" class="text-center">No hay productos agregados.</td>`;
-      tbody.appendChild(tr);
-      return;
-    }
-
-    itemsFactura.forEach((it,idx)=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${it.name}</td>
-        <td class="text-center">${it.quantity}</td>
-        <td class="text-right">${formatearRD(it.price)}</td>
-        <td class="text-right">${formatearRD(it.price*it.quantity)}</td>
-        <td class="text-right"><button class="btn-danger" onclick="eliminarItem(${idx})">X</button></td>
-      `;
-      tbody.appendChild(tr);
+  const existente = itemsFactura.find(i=>i.id===id);
+  if(existente){
+    existente.quantity += qty;
+  }else{
+    itemsFactura.push({
+      id,
+      name: p.name,
+      price: p.price,
+      quantity: qty
     });
   }
 
-  function eliminarItem(i){
-    itemsFactura.splice(i,1);
-    renderFactura();
-    actualizarTotales();
+  renderFactura();
+  actualizarTotales();
+}
+
+function renderFactura(){
+  const tbody = document.getElementById("tablaFactura");
+  tbody.innerHTML = "";
+
+  if(!itemsFactura.length){
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center">No hay productos agregados.</td></tr>`;
+    return;
   }
 
-  function actualizarTotales(){
-    const subtotal = itemsFactura.reduce((acc,it)=>acc + it.price*it.quantity,0);
-    const aplicar  = document.getElementById("aplicarItbis").checked;
-    const itbis    = aplicar ? subtotal*0.18 : 0;
-    const total    = subtotal+itbis;
-
-    document.getElementById("subtotalFactura").textContent = formatearRD(subtotal);
-    document.getElementById("itbisFactura").textContent    = formatearRD(itbis);
-    document.getElementById("totalFactura").textContent    = formatearRD(total);
-  }
-
-  function nuevaFactura(){
-    if(!confirm("¿Limpiar todos los datos de la cotización / factura actual?")) return;
-    itemsFactura = [];
-    renderFactura();
-    actualizarTotales();
-    document.getElementById("clienteNombre").value = "";
-    document.getElementById("clienteDocumento").value = "";
-    document.getElementById("clienteTelefono").value = "";
-    document.getElementById("clienteDireccion").value = "";
-    inicializarFecha();
-    if(isAdmin){
-      // preparamos siguiente número de factura
-      cargarNumeroFactura();
-      document.getElementById("notaInterna").value = "";
-      document.getElementById("metodoPago").value = "EFECTIVO";
-    }
-  }
-
-  async function guardarEnFirestore(){
-    if(!itemsFactura.length){
-      alert("No hay productos en la cotización / factura.");
-      return;
-    }
-
-    const subtotal = itemsFactura.reduce((acc,it)=>acc + it.price*it.quantity,0);
-    const aplica   = document.getElementById("aplicarItbis").checked;
-    const itbis    = aplica ? subtotal*0.18 : 0;
-    const total    = subtotal+itbis;
-
-    const base = {
-      client_name: document.getElementById("clienteNombre").value || null,
-      document_id: document.getElementById("clienteDocumento").value || null,
-      phone:       document.getElementById("clienteTelefono").value || null,
-      address:     document.getElementById("clienteDireccion").value || null,
-      quote_date:  document.getElementById("fechaFactura").value || null,
-      items:       itemsFactura,
-      subtotal,
-      tax: itbis,
-      total,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-
-    try{
-      if(isAdmin){
-        // FACTURA
-        let num = document.getElementById("facturaNumero").value;
-        if(!num){
-          num = await obtenerSiguienteNumeroFactura();
-          document.getElementById("facturaNumero").value = num;
-        }
-        const payload = {
-          ...base,
-          invoiceNumber: num,
-          payment_method: document.getElementById("metodoPago").value,
-          internal_note: document.getElementById("notaInterna").value || null,
-          type: "FACTURA"
-        };
-        await db.collection("invoices").add(payload);
-        alert("Factura guardada como " + num);
-      }else{
-        // COTIZACIÓN
-        const payload = {
-          ...base,
-          type: "COTIZACION"
-        };
-        await db.collection("quotes").add(payload);
-        alert("Cotización guardada correctamente.");
-      }
-      cargarQuotesAdmin(); // si el admin está logueado, actualiza listado
-    }catch(e){
-      console.error(e);
-      alert("Ocurrió un error al guardar.");
-    }
-  }
-
-  function inicializarFecha(){
-    const hoy = new Date();
-    const yyyy = hoy.getFullYear();
-    const mm   = String(hoy.getMonth()+1).padStart(2,"0");
-    const dd   = String(hoy.getDate()).padStart(2,"0");
-    document.getElementById("fechaFactura").value = `${yyyy}-${mm}-${dd}`;
-  }
-
-  // =================== MODO COTIZACIÓN / FACTURA ==================
-  function activarModoDocumento(admin){
-    isAdmin = admin;
-
-    const titulo = document.getElementById("tituloDocumento");
-    const modoTexto = document.getElementById("modoTexto");
-    const facturaInfo = document.getElementById("facturaInfo");
-    const btnGuardar = document.getElementById("btnGuardar");
-
-    if(admin){
-      titulo.textContent = "Factura";
-      modoTexto.textContent = "FACTURA (administrador)";
-      modoTexto.style.color = "#fbbf24";
-      facturaInfo.style.display = "block";
-      btnGuardar.textContent = "Guardar factura";
-      cargarNumeroFactura();
-    }else{
-      titulo.textContent = "Cotización";
-      modoTexto.textContent = "COTIZACIÓN";
-      modoTexto.style.color = "#10b981";
-      facturaInfo.style.display = "none";
-      btnGuardar.textContent = "Guardar cotización";
-      document.getElementById("facturaNumero").value = "";
-      document.getElementById("notaInterna").value = "";
-    }
-  }
-
-  async function obtenerSiguienteNumeroFactura(){
-    try{
-      const snap = await db.collection("invoices")
-        .orderBy("createdAt","desc")
-        .limit(1)
-        .get();
-      let next = 1;
-      if(!snap.empty){
-        const last = snap.docs[0].data();
-        if(last.invoiceNumber && /^F-\d{6}$/.test(last.invoiceNumber)){
-          const n = parseInt(last.invoiceNumber.slice(2),10);
-          if(!isNaN(n)) next = n+1;
-        }
-      }
-      return "F-" + String(next).padStart(6,"0");
-    }catch(e){
-      console.error("Error obteniendo número factura:", e);
-      return "F-000001";
-    }
-  }
-
-  async function cargarNumeroFactura(){
-    const num = await obtenerSiguienteNumeroFactura();
-    document.getElementById("facturaNumero").value = num;
-  }
-
-  // =================== ADMIN: LOGIN / LOGOUT ==================
-  async function login(){
-    const email = document.getElementById("username").value.trim();
-    const pass  = document.getElementById("password").value;
-
-    if(!email || !pass){
-      alert("Escribe correo y contraseña.");
-      return;
-    }
-    try{
-      await auth.signInWithEmailAndPassword(email,pass);
-    }catch(e){
-      console.error(e);
-      alert("Error de inicio de sesión: " + (e.message || ""));
-    }
-  }
-
-  function logout(){
-    auth.signOut();
-  }
-
-  auth.onAuthStateChanged(user=>{
-    const loginSec = document.getElementById("loginSection");
-    const adminSec = document.getElementById("adminSection");
-    const lblUser  = document.getElementById("adminUserLabel");
-
-    if(user){
-      loginSec.style.display = "none";
-      adminSec.style.display = "block";
-      lblUser.textContent = user.email;
-      lblUser.style.color = "#bbf7d0";
-      activarModoDocumento(true);
-      cargarTodoAdmin();
-    }else{
-      loginSec.style.display = "block";
-      adminSec.style.display = "none";
-      lblUser.textContent = "Invitado";
-      lblUser.style.color = "#9ca3af";
-      activarModoDocumento(false);
-    }
+  itemsFactura.forEach((it,idx)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${it.name}</td>
+      <td class="text-center">${it.quantity}</td>
+      <td class="text-right">${formatearRD(it.price)}</td>
+      <td class="text-right">${formatearRD(it.price*it.quantity)}</td>
+      <td class="text-right"><button class="btn-danger" onclick="eliminarItem(${idx})">X</button></td>
+    `;
+    tbody.appendChild(tr);
   });
+}
 
-  async function cargarTodoAdmin(){
-    await Promise.all([
-      cargarSettingsAdmin(),
-      cargarProductosAdmin(),
-      cargarQuotesAdmin()
-    ]);
+function eliminarItem(i){
+  itemsFactura.splice(i,1);
+  renderFactura();
+  actualizarTotales();
+}
+
+/* ==========================================================
+   ACTUALIZAR TOTALES
+========================================================== */
+function actualizarTotales(){
+  const subtotal = itemsFactura.reduce((acc,it)=>acc + it.price*it.quantity,0);
+  const aplicar  = document.getElementById("aplicarItbis").checked;
+  const itbis    = aplicar ? subtotal * 0.18 : 0;
+  const total    = subtotal + itbis + costoEnvio;
+
+  document.getElementById("subtotalFactura").textContent = formatearRD(subtotal);
+  document.getElementById("itbisFactura").textContent    = formatearRD(itbis);
+
+  const envioSpan1 = document.getElementById("totalEnvio");
+  const envioSpan2 = document.getElementById("totalEnvioDetalle");
+  if(envioSpan1) envioSpan1.textContent = formatearRD(costoEnvio);
+  if(envioSpan2) envioSpan2.textContent = formatearRD(costoEnvio);
+
+  document.getElementById("totalFactura").textContent    = formatearRD(total);
+}
+
+/* ==========================================================
+   NUEVA FACTURA
+========================================================== */
+function nuevaFactura(){
+  if(!confirm("¿Limpiar todos los datos?")) return;
+
+  itemsFactura = [];
+  costoEnvio = 0;
+
+  renderFactura();
+  actualizarTotales();
+
+  document.getElementById("clienteNombre").value = "";
+  document.getElementById("clienteDocumento").value = "";
+  document.getElementById("clienteTelefono").value = "";
+  document.getElementById("clienteDireccion").value = "";
+  inicializarFecha();
+
+  document.getElementById("estadoEnvio").textContent = "Esperando ubicación...";
+  document.getElementById("estadoEnvio").style.color = "#38bdf8";
+}
+
+/* ==========================================================
+   GUARDAR EN FIRESTORE
+========================================================== */
+async function guardarEnFirestore(){
+  if(!itemsFactura.length){
+    alert("No hay productos.");
+    return;
   }
 
-  // =================== ADMIN: SETTINGS ==================
-  async function cargarSettingsAdmin(){
-    try{
-      const docSnap = await db.collection("settings").doc("principal").get();
-      if(docSnap.exists){
-        const d = docSnap.data();
-        document.getElementById("storeNameInput").value   = d.store_name || "";
-        document.getElementById("storePhoneInput").value  = d.phone || "";
-        document.getElementById("storeAddressInput").value= d.address || "";
-        if(d.logo){
-          const prev = document.getElementById("logoPreview");
-          prev.src = d.logo;
-          prev.style.display = "block";
-          prev.dataset.base64 = d.logo;
-        }
+  const subtotal = itemsFactura.reduce((acc,it)=>acc + it.price*it.quantity,0);
+  const aplica   = document.getElementById("aplicarItbis").checked;
+  const itbis    = aplica ? subtotal * 0.18 : 0;
+  const total    = subtotal + itbis + costoEnvio;
+
+  const base = {
+    client_name: document.getElementById("clienteNombre").value || null,
+    document_id: document.getElementById("clienteDocumento").value || null,
+    phone:       document.getElementById("clienteTelefono").value || null,
+    address:     document.getElementById("clienteDireccion").value || null,
+    quote_date:  document.getElementById("fechaFactura").value || null,
+    items:       itemsFactura,
+    subtotal,
+    tax: itbis,
+    shipping: costoEnvio,
+    total,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  try{
+    if(isAdmin){
+      let num = document.getElementById("facturaNumero").value;
+      if(!num){
+        num = await obtenerSiguienteNumeroFactura();
+        document.getElementById("facturaNumero").value = num;
       }
-    }catch(e){
-      console.error("Error settings admin:", e);
+
+      const payload = {
+        ...base,
+        invoiceNumber: num,
+        payment_method: document.getElementById("metodoPago").value,
+        internal_note: document.getElementById("notaInterna").value || null,
+        type: "FACTURA"
+      };
+
+      await db.collection("invoices").add(payload);
+      alert("Factura guardada como " + num);
+
+    }else{
+      const payload = { ...base, type:"COTIZACION" };
+      await db.collection("quotes").add(payload);
+      alert("Cotización guardada correctamente.");
     }
+
+    cargarQuotesAdmin();
+
+  }catch(e){
+    console.error(e);
+    alert("Ocurrió un error al guardar.");
   }
+}
 
-  function handleLogoUpload(ev){
-    const file = ev.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = e=>{
-      const img = document.getElementById("logoPreview");
-      img.src = e.target.result;
-      img.style.display = "block";
-      img.dataset.base64 = e.target.result;
-    };
-    reader.readAsDataURL(file);
+/* ==========================================================
+   FECHA AUTOMÁTICA
+========================================================== */
+function inicializarFecha(){
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm   = String(hoy.getMonth()+1).padStart(2,"0");
+  const dd   = String(hoy.getDate()).padStart(2,"0");
+  document.getElementById("fechaFactura").value = `${yyyy}-${mm}-${dd}`;
+}
+
+/* ==========================================================
+   MODO FACTURA / COTIZACIÓN
+========================================================== */
+function activarModoDocumento(admin){
+  isAdmin = admin;
+
+  const titulo = document.getElementById("tituloDocumento");
+  const modoTexto = document.getElementById("modoTexto");
+  const facturaInfo = document.getElementById("facturaInfo");
+  const btnGuardar = document.getElementById("btnGuardar");
+
+  if(admin){
+    titulo.textContent = "Factura";
+    modoTexto.textContent = "FACTURA (administrador)";
+    modoTexto.style.color = "#fbbf24";
+    facturaInfo.style.display = "block";
+    btnGuardar.textContent = "Guardar factura";
+    cargarNumeroFactura();
+
+  }else{
+    titulo.textContent = "Cotización";
+    modoTexto.textContent = "COTIZACIÓN";
+    modoTexto.style.color = "#10b981";
+    facturaInfo.style.display = "none";
+    btnGuardar.textContent = "Guardar cotización";
+    document.getElementById("facturaNumero").value = "";
+    document.getElementById("notaInterna").value = "";
   }
+}
 
-  async function guardarSettings(){
-    const nombre  = document.getElementById("storeNameInput").value.trim();
-    const phone   = document.getElementById("storePhoneInput").value.trim();
-    const address = document.getElementById("storeAddressInput").value.trim();
-    const prev    = document.getElementById("logoPreview");
-    const logo64  = prev.dataset.base64 || null;
+/* ==========================================================
+   NÚMERO DE FACTURA AUTOMÁTICO
+========================================================== */
+async function obtenerSiguienteNumeroFactura(){
+  try{
+    const snap = await db.collection("invoices")
+      .orderBy("createdAt","desc")
+      .limit(1)
+      .get();
 
-    try{
-      await db.collection("settings").doc("principal").set({
-        store_name: nombre  || "Trifusion Technologies",
-        phone:      phone   || "829-872-5163",
-        address:    address || "Autopista de San Isidro",
-        logo:       logo64,
-        updatedAt:  firebase.firestore.FieldValue.serverTimestamp()
-      },{merge:true});
-      alert("Datos de tienda guardados.");
-      cargarSettingsPublic();
-    }catch(e){
-      console.error(e);
-      alert("Error al guardar los datos de la tienda.");
+    let next = 1;
+
+    if(!snap.empty){
+      const last = snap.docs[0].data();
+      if(last.invoiceNumber && /^F-\d{6}$/.test(last.invoiceNumber)){
+        const n = parseInt(last.invoiceNumber.slice(2),10);
+        if(!isNaN(n)) next = n+1;
+      }
     }
+
+    return "F-" + String(next).padStart(6,"0");
+
+  }catch(e){
+    console.error("Error número factura:", e);
+    return "F-000001";
   }
+}
 
-  // =================== ADMIN: PRODUCTOS ==================
-  async function cargarProductosAdmin(){
-    try{
-      const snap = await db.collection("products").orderBy("createdAt","desc").get();
-      const tbody = document.getElementById("tablaProductos");
-      const select = document.getElementById("productoSeleccionado");
-      tbody.innerHTML = "";
-      select.innerHTML = "<option value=''>-- Selecciona un producto --</option>";
-      productos = [];
+async function cargarNumeroFactura(){
+  const num = await obtenerSiguienteNumeroFactura();
+  document.getElementById("facturaNumero").value = num;
+}
 
-      snap.forEach(doc=>{
-        const d = doc.data();
-        const p = {
-          id: doc.id,
-          name: d.name,
-          price: Number(d.price)||0,
-          code: d.code || "",
-          description: d.description || ""
-        };
-        productos.push(p);
+/* ==========================================================
+   LOGIN / LOGOUT
+========================================================== */
+async function login(){
+  const email = document.getElementById("username").value.trim();
+  const pass  = document.getElementById("password").value;
 
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${p.name}</td>
-          <td class="text-right">${formatearRD(p.price)}</td>
-          <td class="text-center">${p.code}</td>
-          <td class="text-right"><button class="btn-danger" onclick="borrarProducto('${doc.id}')">X</button></td>
-        `;
-        tbody.appendChild(tr);
+  if(!email || !pass){
+    alert("Escribe correo y contraseña.");
+    return;
+  }
+  try{
+    await auth.signInWithEmailAndPassword(email,pass);
 
-        const op = document.createElement("option");
-        op.value = p.id;
-        op.textContent = `${p.name} (RD$ ${p.price.toFixed(2)})`;
-        select.appendChild(op);
-      });
-    }catch(e){
-      console.error("Error productos admin:", e);
+  }catch(e){
+    console.error(e);
+    alert("Error de inicio de sesión: " + (e.message || ""));
+  }
+}
+
+function logout(){
+  auth.signOut();
+}
+
+auth.onAuthStateChanged(user=>{
+  const loginSec = document.getElementById("loginSection");
+  const adminSec = document.getElementById("adminSection");
+  const lblUser  = document.getElementById("adminUserLabel");
+
+  if(user){
+    loginSec.style.display = "none";
+    adminSec.style.display = "block";
+    lblUser.textContent = user.email;
+    lblUser.style.color = "#bbf7d0";
+
+    activarModoDocumento(true);
+    cargarTodoAdmin();
+
+  }else{
+    loginSec.style.display = "block";
+    adminSec.style.display = "none";
+    lblUser.textContent = "Invitado";
+    lblUser.style.color = "#9ca3af";
+
+    activarModoDocumento(false);
+  }
+});
+
+/* ==========================================================
+   CARGA COMPLETA ADMIN
+========================================================== */
+async function cargarTodoAdmin(){
+  await Promise.all([
+    cargarSettingsAdmin(),
+    cargarProductosAdmin(),
+    cargarQuotesAdmin()
+  ]);
+}
+
+/* ==========================================================
+   SETTINGS ADMIN
+========================================================== */
+async function cargarSettingsAdmin(){
+  try{
+    const docSnap = await db.collection("settings").doc("principal").get();
+
+    if(docSnap.exists){
+      const d = docSnap.data();
+
+      document.getElementById("storeNameInput").value   = d.store_name || "";
+      document.getElementById("storePhoneInput").value  = d.phone || "";
+      document.getElementById("storeAddressInput").value= d.address || "";
+
+      if(d.logo){
+        const prev = document.getElementById("logoPreview");
+        prev.src = d.logo;
+        prev.style.display = "block";
+        prev.dataset.base64 = d.logo;
+      }
     }
+
+  }catch(e){
+    console.error("Error settings admin:", e);
   }
+}
 
-  async function crearProducto(){
-    const code  = (document.getElementById("codigoProducto").value || "").trim();
-    const name  = (document.getElementById("nombreProducto").value || "").trim();
-    const raw   = document.getElementById("precioProducto").value;
-    const desc  = (document.getElementById("descripcionProducto").value || "").trim();
-    const price = parseFloat(String(raw).replace(",","."));    
+function handleLogoUpload(ev){
+  const file = ev.target.files[0];
+  if(!file) return;
 
-    if(!name || isNaN(price)){
-      alert("Nombre y precio válidos son obligatorios.");
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const img = document.getElementById("logoPreview");
+    img.src = e.target.result;
+    img.style.display = "block";
+    img.dataset.base64 = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function guardarSettings(){
+  const nombre  = document.getElementById("storeNameInput").value.trim();
+  const phone   = document.getElementById("storePhoneInput").value.trim();
+  const address = document.getElementById("storeAddressInput").value.trim();
+  const prev    = document.getElementById("logoPreview");
+  const logo64  = prev.dataset.base64 || null;
+
+  try{
+    await db.collection("settings").doc("principal").set({
+      store_name: nombre  || "Trifusion Technologies",
+      phone:      phone   || "829-872-5163",
+      address:    address || "Autopista de San Isidro",
+      logo:       logo64,
+      updatedAt:  firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge:true });
+
+    alert("Datos de tienda guardados.");
+    cargarSettingsPublic();
+
+  }catch(e){
+    console.error(e);
+    alert("Error al guardar los datos de la tienda.");
+  }
+}
+
+/* ==========================================================
+   ADMIN – PRODUCTOS
+========================================================== */
+async function cargarProductosAdmin(){
+  try{
+    const snap = await db.collection("products")
+      .orderBy("createdAt","desc")
+      .get();
+
+    const tbody = document.getElementById("tablaProductos");
+    const select = document.getElementById("productoSeleccionado");
+    tbody.innerHTML = "";
+    select.innerHTML = "<option value=''>-- Selecciona un producto --</option>";
+
+    productos = [];
+
+    snap.forEach(doc=>{
+      const d = doc.data();
+      const p = {
+        id: doc.id,
+        name: d.name,
+        price: Number(d.price)||0,
+        code: d.code || "",
+        description: d.description || ""
+      };
+
+      productos.push(p);
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${p.name}</td>
+        <td class="text-right">RD$ ${p.price.toFixed(2)}</td>
+        <td class="text-center">${p.code}</td>
+        <td class="text-right">
+          <button class="btn-danger" onclick="borrarProducto('${doc.id}')">X</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      const op = document.createElement("option");
+      op.value = p.id;
+      op.textContent = `${p.name} (RD$ ${p.price.toFixed(2)})`;
+      select.appendChild(op);
+    });
+
+  }catch(e){
+    console.error("Error productos admin:", e);
+  }
+}
+
+async function borrarProducto(id){
+  if(!confirm("¿Eliminar este producto?")) return;
+
+  try{
+    await db.collection("products").doc(id).delete();
+    cargarProductosAdmin();
+
+  }catch(e){
+    console.error(e);
+    alert("Error al eliminar producto.");
+  }
+}
+
+/* ==========================================================
+   ADMIN – EXCEL
+========================================================== */
+function procesarExcel(ev){
+  const file = ev.target.files[0];
+  if(!file) return;
+
+  const status = document.getElementById("excelStatus");
+  status.textContent = "Procesando archivo...";
+
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const data   = new Uint8Array(e.target.result);
+    const wb     = XLSX.read(data,{type:"array"});
+    const sheet  = wb.Sheets[wb.SheetNames[0]];
+    const rows   = XLSX.utils.sheet_to_json(sheet,{defval:""});
+
+    const lista  = [];
+
+    rows.forEach(r=>{
+      const nombre = r.nombre || r.Nombre || r.NOMBRE || "";
+      const precioR= r.precio || r.Precio || r.PRECIO || "";
+      const desc   = r.descripcion || r.Descripcion || r.DESCRIPCION || "";
+      const codigo = r.codigo || r.Codigo || r.CÓDIGO || "";
+
+      const price = parseFloat(String(precioR).toString().replace(",","."));        
+
+      if(nombre && !isNaN(price)){
+        lista.push({
+          name:nombre,
+          price:price,
+          description:desc,
+          code:codigo
+        });
+      }
+    });
+
+    if(!lista.length){
+      status.textContent = "No se encontraron filas válidas.";
       return;
     }
-    try{
-      await db.collection("products").add({
-        name,
-        price,
-        description: desc,
-        code: code || null,
+
+    enviarBulkProductos(lista);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+async function enviarBulkProductos(lista){
+  const status = document.getElementById("excelStatus");
+
+  try{
+    const batch = db.batch();
+
+    lista.forEach(p=>{
+      const ref = db.collection("products").doc();
+      batch.set(ref,{
+        name:p.name,
+        price:p.price,
+        description:p.description || "",
+        code:p.code || null,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      alert("Producto creado.");
-      document.getElementById("codigoProducto").value="";
-      document.getElementById("nombreProducto").value="";
-      document.getElementById("precioProducto").value="";
-      document.getElementById("descripcionProducto").value="";
-      cargarProductosAdmin();
-    }catch(e){
-      console.error(e);
-      alert("Error al crear producto.");
-    }
+    });
+
+    await batch.commit();
+    status.textContent = `Se agregaron ${lista.length} productos.`;
+
+    cargarProductosAdmin();
+
+  }catch(e){
+    console.error(e);
+    status.textContent = "Error al guardar productos.";
   }
+}
 
-  async function borrarProducto(id){
-    if(!confirm("¿Eliminar este producto?")) return;
-    try{
-      await db.collection("products").doc(id).delete();
-      cargarProductosAdmin();
-    }catch(e){
-      console.error(e);
-      alert("Error al eliminar producto.");
-    }
+/* ==========================================================
+   ADMIN – COTIZACIONES Y FACTURAS RECIENTES
+========================================================== */
+async function cargarQuotesAdmin(){
+  try{
+    const quotesSnap   = await db.collection("quotes")
+      .orderBy("createdAt","desc")
+      .limit(20)
+      .get();
+
+    const invoicesSnap = await db.collection("invoices")
+      .orderBy("createdAt","desc")
+      .limit(20)
+      .get();
+
+    const tbody = document.getElementById("tablaQuotes");
+    tbody.innerHTML = "";
+
+    quotesSnap.forEach(doc=>{
+      const d = doc.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${d.client_name || ""}</td>
+        <td>COT</td>
+        <td class="text-right">RD$ ${(d.total||0).toFixed(2)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    invoicesSnap.forEach(doc=>{
+      const d = doc.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${d.client_name || ""}</td>
+        <td>${d.invoiceNumber || "FAC"}</td>
+        <td class="text-right">RD$ ${(d.total||0).toFixed(2)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+  }catch(e){
+    console.error("Error cargando cotizaciones:", e);
   }
+}
 
-  // =================== ADMIN: EXCEL ==================
-  function procesarExcel(ev){
-    const file = ev.target.files[0];
-    if(!file) return;
-    const status = document.getElementById("excelStatus");
-    status.textContent = "Procesando archivo...";
-
-    const reader = new FileReader();
-    reader.onload = e=>{
-      const data   = new Uint8Array(e.target.result);
-      const wb     = XLSX.read(data,{type:"array"});
-      const sheet  = wb.Sheets[wb.SheetNames[0]];
-      const rows   = XLSX.utils.sheet_to_json(sheet,{defval:""});
-      const lista  = [];
-
-      rows.forEach(r=>{
-        const nombre = r.nombre || r.Nombre || r.NOMBRE || "";
-        const precioR= r.precio || r.Precio || r.PRECIO || "";
-        const desc   = r.descripcion || r.Descripcion || r.DESCRIPCION || "";
-        const codigo = r.codigo || r.Codigo || r.CÓDIGO || "";
-
-        const price = parseFloat(String(precioR).toString().replace(",","."));        
-        if(nombre && !isNaN(price)){
-          lista.push({
-            name:nombre,
-            price:price,
-            description:desc,
-            code:codigo
-          });
-        }
-      });
-
-      if(!lista.length){
-        status.textContent = "No se encontraron filas válidas.";
-        return;
-      }
-      enviarBulkProductos(lista);
-    };
-    reader.readAsArrayBuffer(file);
-  }
-
-  async function enviarBulkProductos(lista){
-    const status = document.getElementById("excelStatus");
-    try{
-      const batch = db.batch();
-      lista.forEach(p=>{
-        const ref = db.collection("products").doc();
-        batch.set(ref,{
-          name:p.name,
-          price:p.price,
-          description:p.description || "",
-          code:p.code || null,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      });
-      await batch.commit();
-      status.textContent = `Se agregaron ${lista.length} productos.`;
-      cargarProductosAdmin();
-    }catch(e){
-      console.error(e);
-      status.textContent = "Error al guardar productos.";
-    }
-  }
-
-  // =================== ADMIN: QUOTES/INVOICES ==================
-  async function cargarQuotesAdmin(){
-    try{
-      const quotesSnap   = await db.collection("quotes").orderBy("createdAt","desc").limit(20).get();
-      const invoicesSnap = await db.collection("invoices").orderBy("createdAt","desc").limit(20).get();
-      const tbody = document.getElementById("tablaQuotes");
-      tbody.innerHTML = "";
-
-      quotesSnap.forEach(doc=>{
-        const d = doc.data();
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${d.client_name || ""}</td>
-          <td>COT</td>
-          <td class="text-right">${formatearRD(d.total || 0)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      invoicesSnap.forEach(doc=>{
-        const d = doc.data();
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${d.client_name || ""}</td>
-          <td>${d.invoiceNumber || "FAC"}</td>
-          <td class="text-right">${formatearRD(d.total || 0)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-    }catch(e){
-      console.error("Error cargando cotizaciones/facturas:", e);
-    }
-  }
-
-  // =================== INICIO ==================
-  window.addEventListener("DOMContentLoaded",()=>{
-    inicializarFecha();
-    cargarSettingsPublic();
-    cargarProductosPublic();
-    activarModoDocumento(false); // por defecto, modo cotización
-    renderFactura();
-    actualizarTotales();
-  });
+/* ==========================================================
+   INICIO DEL SISTEMA
+========================================================== */
+window.addEventListener("DOMContentLoaded",()=>{
+  inicializarFecha();
+  cargarSettingsPublic();
+  cargarProductosPublic();
+  activarModoDocumento(false);
+  renderFactura();
+  actualizarTotales();
+});
 </script>
 
 </body>
 </html>
+
+
 
 
 
