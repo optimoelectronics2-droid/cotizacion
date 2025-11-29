@@ -169,42 +169,49 @@ tr:nth-child(even){
 
 @media print {
   @page {
-    size: 8.5in 11in;   /* Carta */
-    margin: 10mm;       /* Márgenes perfectos */
+    size: 8.5in 11in;
+    margin: 10mm;
   }
 
   body {
-    background: #ffffff !important;   /* Fondo blanco papel */
-    color: #000000 !important;        /* Texto negro */
+    background: #ffffff !important;
+    color: #000000 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-    padding: 0 !important;
     margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* Quitar menú lateral */
   .sidebar {
     display: none !important;
   }
 
-  /* Hacer que la factura salga clara en impresión */
-  .main {
-    background: #ffffff !important;   /* Fondo blanco */
-    border: none !important;
-    box-shadow: none !important;
-    color: #000000 !important;
-    padding: 8mm !important;
-  }
-
-  /* Las tarjetas también en fondo blanco */
-  .card {
+  /* ----- FACTURA BLANCA ----- */
+  .main,
+  .card,
+  table,
+  tr,
+  td,
+  th {
     background: #ffffff !important;
-    border: 1px solid #cccccc !important;
     color: #000000 !important;
+    border-color: #000000 !important;
   }
 
-  h1, h2, h3, label, th, td, span, div {
-    color: #000000 !important; /* Todo texto en negro */
+  /* Quitar cualquier sombra o borde oscuro */
+  .main {
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #000000 !important;
+  }
+
+  /* Texto negro */
+  h1, h2, h3, label, span, div, p, strong {
+    color: #000000 !important;
   }
 
   /* Botones ocultos */
@@ -218,6 +225,7 @@ tr:nth-child(even){
 
    
   
+
 
 
 
