@@ -169,45 +169,57 @@ tr:nth-child(even){
 
 @media print {
   @page {
-    size: 8.5in 11in;   /* Ajuste a hoja carta */
-    margin: 10mm;       /* Márgenes adecuados */
+    size: 8.5in 11in;
+    margin: 10mm;
   }
 
   body {
-    background:#fff !important;
-    color:#000 !important;
-    padding:0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
+  /* Ocultar menú lateral */
   .sidebar {
-    display:none !important;
+    display: none !important;
+  }
+
+  /* ESTE ES EL PUNTO CLAVE */
+  /* Quitar TODOS los fondos oscuros */
+  .main,
+  .card,
+  table,
+  tr,
+  td,
+  th {
+    background: #ffffff !important;   /* Sin cuadros negros */
+    color: #000000 !important;
+    box-shadow: none !important;
+    border-color: #000 !important;
+  }
+
+  /* Quitar cualquier borde grueso o sombra */
+  .main {
+    border: none !important;
+    box-shadow: none !important;
   }
 
   .card {
-    box-shadow:none !important;
-    border:none !important;
-    border-radius:0 !important;
-    background:#fff !important;   /* Igual que la primera vez */
-    color:#000 !important;
+    border: none !important;
+    border-radius: 0 !important;
   }
 
-  /* Mantener todo limpio como la primera impresión */
-  .main {
-    background:#fff !important;
-    box-shadow:none !important;
-    border:none !important;
+  /* Texto siempre negro */
+  h1, h2, h3, label, span, div, p {
+    color: #000000 !important;
   }
 
-  table, tr, td, th {
-    background:#fff !important;
-    color:#000 !important;
-    border-color:#000 !important;
-  }
-
-  /* Eliminar botones como siempre */
+  /* Ocultar botones */
   .btn, .btn-secondary, .btn-danger, a {
-    display:none !important;
+    display: none !important;
   }
 }
+
