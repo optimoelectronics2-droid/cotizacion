@@ -169,8 +169,8 @@ tr:nth-child(even){
 
 @media print {
   @page {
-    size: 8.5in 11in;  /* Tamaño Carta exacto */
-    margin: 8mm;       /* Puedes subir o bajar el margen si quieres */
+    size: 8.5in 11in;  /* Tamaño Carta */
+    margin: 10mm 12mm; /* Márgenes perfectos para que no corte nada */
   }
 
   body {
@@ -178,26 +178,62 @@ tr:nth-child(even){
     color: #000 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    margin: 0 !important;
     padding: 0 !important;
   }
 
+  /* Ocultar menú lateral */
   .sidebar {
     display: none !important;
   }
 
+  /* Área principal optimizada para impresión */
   .main {
     border: none !important;
     box-shadow: none !important;
+
+    /* La clave para ajustar la factura al tamaño de la hoja */
     width: 100% !important;
     max-width: 100% !important;
+
+    margin: 0 !important;
+    padding: 6mm 6mm !important; /* Ajuste interno perfecto */
   }
 
+  /* Ajustes de las tarjetas para que no se amontonen */
+  .card {
+    margin-bottom: 10px !important;
+    padding: 10px !important;
+    border-radius: 0 !important;
+    border: 1px solid #ccc !important;
+  }
+
+  h1, h2, h3 {
+    color: #000 !important;
+  }
+
+  /* Asegurar que las tablas queden dentro de la hoja */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th, td {
+    padding: 6px 4px !important;
+    font-size: 11px !important;
+    border-bottom: 1px solid #bbb !important;
+  }
+
+  /* Ocultar todos los botones al imprimir */
   .btn,
   .btn-secondary,
   .btn-danger {
     display: none !important;
   }
 }
+
+   
+  
 
 
 
