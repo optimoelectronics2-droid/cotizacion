@@ -169,19 +169,57 @@ tr:nth-child(even){
 
 @media print {
   @page {
-    size: 8.5in 11in;   /* Tamaño Carta */
-    margin: 10mm;       /* Márgenes adecuados */
+    size: 8.5in 11in;        /* Hoja carta real */
+    margin: 12mm;            /* Márgenes perfectos (no muy grandes ni pequeños) */
   }
 
   body {
+    background: #ffffff !important;   /* Fondo blanco real */
+    color: #000000 !important;         /* Texto negro */
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
+  /* Quitar el menú lateral */
   .sidebar {
     display: none !important;
   }
 
+  /* Restaurar factura limpia y clara como antes */
+  .main {
+    background: #ffffff !important;     /* Fondo blanco (como en la factura original) */
+    border: none !important;
+    box-shadow: none !important;
+    padding: 10mm !important;
+    width: 100% !important;
+  }
+
+  /* Cartas blancas claras como antes */
+  .card {
+    background: #ffffff !important;
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
+    color: #000000 !important;
+    padding: 10px !important;
+  }
+
+  h1, h2, h3, label, div, span, td, th, p {
+    color: #000000 !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse;
+    background: #ffffff !important;
+  }
+
+  th, td {
+    border-bottom: 1px solid #cccccc !important;
+  }
+
+  /* Ocultar botones */
   .btn,
   .btn-secondary,
   .btn-danger {
@@ -190,8 +228,10 @@ tr:nth-child(even){
 }
 
 
+
    
   
+
 
 
 
