@@ -169,62 +169,45 @@ tr:nth-child(even){
 
 @media print {
   @page {
-    size: 8.5in 11in;  /* Tamaño Carta */
-    margin: 10mm 12mm; /* Márgenes perfectos para que no corte nada */
+    size: 8.5in 11in;   /* Carta */
+    margin: 10mm;       /* Márgenes perfectos */
   }
 
   body {
-    background: #fff !important;
-    color: #000 !important;
+    background: #ffffff !important;   /* Fondo blanco papel */
+    color: #000000 !important;        /* Texto negro */
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-    margin: 0 !important;
     padding: 0 !important;
+    margin: 0 !important;
   }
 
-  /* Ocultar menú lateral */
+  /* Quitar menú lateral */
   .sidebar {
     display: none !important;
   }
 
-  /* Área principal optimizada para impresión */
+  /* Hacer que la factura salga clara en impresión */
   .main {
+    background: #ffffff !important;   /* Fondo blanco */
     border: none !important;
     box-shadow: none !important;
-
-    /* La clave para ajustar la factura al tamaño de la hoja */
-    width: 100% !important;
-    max-width: 100% !important;
-
-    margin: 0 !important;
-    padding: 6mm 6mm !important; /* Ajuste interno perfecto */
+    color: #000000 !important;
+    padding: 8mm !important;
   }
 
-  /* Ajustes de las tarjetas para que no se amontonen */
+  /* Las tarjetas también en fondo blanco */
   .card {
-    margin-bottom: 10px !important;
-    padding: 10px !important;
-    border-radius: 0 !important;
-    border: 1px solid #ccc !important;
+    background: #ffffff !important;
+    border: 1px solid #cccccc !important;
+    color: #000000 !important;
   }
 
-  h1, h2, h3 {
-    color: #000 !important;
+  h1, h2, h3, label, th, td, span, div {
+    color: #000000 !important; /* Todo texto en negro */
   }
 
-  /* Asegurar que las tablas queden dentro de la hoja */
-  table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-  }
-
-  th, td {
-    padding: 6px 4px !important;
-    font-size: 11px !important;
-    border-bottom: 1px solid #bbb !important;
-  }
-
-  /* Ocultar todos los botones al imprimir */
+  /* Botones ocultos */
   .btn,
   .btn-secondary,
   .btn-danger {
@@ -232,8 +215,10 @@ tr:nth-child(even){
   }
 }
 
+
    
   
+
 
 
 
