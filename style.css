@@ -1,0 +1,183 @@
+/* style.css — Estilo dark premium para Trifusion */
+
+:root{
+  --bg:#020617;
+  --panel:#020617;
+  --border:#1f2937;
+  --muted:#9ca3af;
+  --text:#e5e7eb;
+  --accent:#10b981;
+  --danger:#f97373;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding:16px;
+}
+
+.app{
+  max-width:1100px;
+  margin:0 auto;
+}
+
+.card{
+  background:var(--panel);
+  border-radius:16px;
+  border:1px solid var(--border);
+  padding:16px;
+  box-shadow:0 18px 45px rgba(0,0,0,0.6);
+  margin-bottom:16px;
+}
+
+h1,h2,h3,h4{
+  margin:0 0 8px;
+}
+
+.small{
+  font-size:11px;
+  color:var(--muted);
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.row>div{
+  flex:1;
+}
+
+label{
+  font-size:12px;
+  color:var(--muted);
+  display:block;
+  margin-bottom:3px;
+}
+
+input,textarea,select{
+  width:100%;
+  padding:7px 10px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
+  font-size:13px;
+  outline:none;
+}
+
+input:focus,textarea:focus,select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px rgba(16,185,129,0.5);
+}
+
+textarea{
+  resize:vertical;
+  min-height:60px;
+}
+
+.btn{
+  border:none;
+  border-radius:999px;
+  padding:7px 14px;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--accent);
+  color:#022c22;
+  box-shadow:0 10px 25px rgba(16,185,129,0.45);
+}
+
+.btn-secondary{
+  background:#111827;
+  color:var(--text);
+  box-shadow:none;
+  border:1px solid #374151;
+}
+
+.btn-danger{
+  background:#7f1d1d;
+  color:#fecaca;
+  border:1px solid #fecaca;
+}
+
+.flex-between{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:8px;
+  font-size:12px;
+  background:var(--bg);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+th,td{
+  padding:6px 8px;
+  border-bottom:1px solid #111827;
+  text-align:left;
+}
+
+th{
+  background:var(--bg);
+  color:var(--muted);
+  font-weight:500;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+tr:nth-child(even){
+  background:rgba(15,23,42,0.7);
+}
+
+.text-right{
+  text-align:right;
+}
+.text-center{
+  text-align:center;
+}
+
+#logoFactura, #logoPreview{
+  max-height:60px;
+  max-width:130px;
+  object-fit:contain;
+  border-radius:6px;
+  background:var(--bg);
+  padding:4px;
+  border:1px solid var(--border);
+  display:none;
+}
+
+/* Para impresión de la cotización */
+@media print{
+  body{
+    background:#fff;
+    color:#000;
+    padding:0;
+  }
+  .card{
+    box-shadow:none;
+    border:none;
+    border-radius:0;
+  }
+  .btn, .btn-secondary, .btn-danger, a{
+    display:none !important;
+  }
+}

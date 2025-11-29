@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Cotizador - Trifusion Technologies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <!-- Encabezado con datos de la tienda -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="flex-between">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <img id="logoFactura" alt="Logo Trifusion" />
+        <div>
+          <h1 id="storeNameDisplay">Trifusion Technologies</h1>
+          <div class="small">
+            WhatsApp: <span id="storePhoneDisplay">829-872-5163</span><br>
+            <span id="storeAddressDisplay">Autopista de San Isidro</span>
+          </div>
+        </div>
+      </div>
+      <div class="small">
+        Cotizador público<br>
+        <a href="admin.html" style="color:#10b981;text-decoration:none;">Acceso administrador</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cotizador -->
+  <div class="card">
+    <h2>Generar cotización</h2>
+
+    <!-- Datos del cliente -->
+    <div class="row">
+      <div>
+        <label for="clienteNombre">Cliente</label>
+        <input id="clienteNombre" type="text" placeholder="Nombre del cliente">
+      </div>
+      <div>
+        <label for="clienteDocumento">Documento</label>
+        <input id="clienteDocumento" type="text" placeholder="RNC / Cédula">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="clienteTelefono">Teléfono</label>
+        <input id="clienteTelefono" type="text" placeholder="Número de teléfono">
+      </div>
+      <div>
+        <label for="clienteDireccion">Dirección</label>
+        <input id="clienteDireccion" type="text" placeholder="Dirección del cliente">
+      </div>
+    </div>
+    <div class="row">
+      <div style="max-width:200px;">
+        <label for="fechaFactura">Fecha</label>
+        <input id="fechaFactura" type="date">
+      </div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid #111827;margin:10px 0;">
+
+    <!-- Selección de productos -->
+    <div class="flex-between">
+      <h3>Detalle</h3>
+      <label style="font-size:12px;color:#9ca3af;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="aplicarItbis" checked style="width:auto;"> ITBIS 18%
+      </label>
+    </div>
+
+    <div class="row" style="margin-top:8px;">
+      <div style="flex:1.8;">
+        <label for="productoSeleccionado">Producto</label>
+        <select id="productoSeleccionado">
+          <option value="">-- Selecciona un producto --</option>
+        </select>
+      </div>
+      <div style="flex:0.7;">
+        <label for="cantidadProducto">Cantidad</label>
+        <input id="cantidadProducto" type="number" min="1" value="1">
+      </div>
+      <div style="flex:0.7;">
+        <label>&nbsp;</label>
+        <button class="btn" style="width:100%;" onclick="agregarALaFactura()">Agregar</button>
+      </div>
+    </div>
+
+    <!-- Tabla de detalle -->
+    <div style="max-height:260px;overflow:auto;margin-top:8px;border-radius:12px;border:1px solid #111827;">
+      <table>
+        <thead>
+        <tr>
+          <th>Producto</th>
+          <th class="text-center">Cant.</th>
+          <th class="text-right">Precio</th>
+          <th class="text-right">Importe</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody id="tablaFactura"></tbody>
+      </table>
+    </div>
+
+    <!-- Totales -->
+    <div style="margin-top:10px;border-top:1px dashed #374151;padding-top:8px;font-size:13px;">
+      <div class="flex-between">
+        <span>Subtotal</span>
+        <span id="subtotalFactura">RD$ 0.00</span>
+      </div>
+      <div class="flex-between">
+        <span>ITBIS 18%</span>
+        <span id="itbisFactura">RD$ 0.00</span>
+      </div>
+      <div class="flex-between" style="font-weight:600;color:#10b981;margin-top:4px;">
+        <span>Total</span>
+        <span id="totalFactura">RD$ 0.00</span>
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="flex-between" style="margin-top:12px;">
+      <button class="btn-secondary btn" onclick="nuevaFactura()">Nueva cotización</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-secondary btn" onclick="guardarEnFirestore()">Guardar en sistema</button>
+        <button class="btn" onclick="window.print()">Imprimir / PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SDKs de Firebase (compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+
+<!-- Configuración de Firebase -->
+<script src="firebase-config.js"></script>
+
+<script>
+  let productos = [];
+  let itemsFactura = [];
+
+  function formatearRD(v){ return 'RD$ ' + v.toFixed(2); }
+
+  async function cargarSettings(){
+    try{
+      const docRef = db.collection('settings').doc('principal');
+      const snap = await docRef.get();
+      if (snap.exists){
+        const data = snap.data();
+        document.getElementById('storeNameDisplay').textContent = data.store_name || 'Trifusion Technologies';
+        document.getElementById('storePhoneDisplay').textContent = data.phone || '829-872-5163';
+        document.getElementById('storeAddressDisplay').textContent = data.address || 'Autopista de San Isidro';
+        if (data.logo){
+          const img = document.getElementById('logoFactura');
+          img.src = data.logo;
+          img.style.display = 'block';
+        }
+      }
+    }catch(e){
+      console.error('Error cargando settings:', e);
+    }
+  }
+
+  async function cargarProductos(){
+    try{
+      const snap = await db.collection('products').orderBy('createdAt','desc').get();
+      productos = [];
+      const select = document.getElementById('productoSeleccionado');
+      select.innerHTML = '<option value="">-- Selecciona un producto --</option>';
+      snap.forEach(doc=>{
+        const d = doc.data();
+        productos.push({
+          id: doc.id,
+          name: d.name,
+          price: Number(d.price) || 0,
+          description: d.description || ''
+        });
+      });
+      productos.forEach(p=>{
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.name} (RD$ ${p.price.toFixed(2)})`;
+        select.appendChild(opt);
+      });
+    }catch(e){
+      console.error('Error cargando productos:', e);
+    }
+  }
+
+  function renderFactura(){
+    const tbody = document.getElementById('tablaFactura');
+    tbody.innerHTML = '';
+    if (!itemsFactura.length){
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 5;
+      td.textContent = 'No hay productos en la cotización.';
+      td.className = 'text-center';
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+    itemsFactura.forEach((item,idx)=>{
+      const tr = document.createElement('tr');
+      const tdN = document.createElement('td');
+      tdN.textContent = item.name;
+      const tdC = document.createElement('td');
+      tdC.textContent = item.quantity;
+      tdC.className = 'text-center';
+      const tdP = document.createElement('td');
+      tdP.textContent = formatearRD(item.price);
+      tdP.className = 'text-right';
+      const imp = item.price * item.quantity;
+      const tdI = document.createElement('td');
+      tdI.textContent = formatearRD(imp);
+      tdI.className = 'text-right';
+      const tdX = document.createElement('td');
+      tdX.className = 'text-right';
+      const btn = document.createElement('button');
+      btn.textContent = '✕';
+      btn.className = 'btn-secondary btn';
+      btn.style.padding = '3px 8px';
+      btn.style.fontSize = '11px';
+      btn.onclick = ()=>{
+        itemsFactura.splice(idx,1);
+        renderFactura();
+        actualizarTotales();
+      };
+      tdX.appendChild(btn);
+      tr.appendChild(tdN); tr.appendChild(tdC); tr.appendChild(tdP); tr.appendChild(tdI); tr.appendChild(tdX);
+      tbody.appendChild(tr);
+    });
+  }
+
+  function actualizarTotales(){
+    const subtotal = itemsFactura.reduce((acc,i)=>acc + i.price * i.quantity,0);
+    const aplicar = document.getElementById('aplicarItbis').checked;
+    const itbis = aplicar ? subtotal * 0.18 : 0;
+    const total = subtotal + itbis;
+    document.getElementById('subtotalFactura').textContent = formatearRD(subtotal);
+    document.getElementById('itbisFactura').textContent = formatearRD(itbis);
+    document.getElementById('totalFactura').textContent = formatearRD(total);
+  }
+
+  function agregarALaFactura(){
+    const sel = document.getElementById('productoSeleccionado');
+    const id = sel.value;
+    const cant = parseInt(document.getElementById('cantidadProducto').value);
+    if (!id){ alert('Selecciona un producto.'); return; }
+    if (!cant || cant<=0){ alert('Cantidad inválida'); return; }
+    const p = productos.find(x=>x.id===id);
+    if (!p){ alert('Producto no encontrado'); return; }
+    const existente = itemsFactura.find(i=>i.id===id);
+    if (existente){ existente.quantity += cant; }
+    else{
+      itemsFactura.push({
+        id,
+        name: p.name,
+        price: p.price,
+        quantity: cant
+      });
+    }
+    renderFactura();
+    actualizarTotales();
+  }
+
+  function nuevaFactura(){
+    if (!confirm('¿Limpiar la cotización actual?')) return;
+    itemsFactura = [];
+    renderFactura();
+    actualizarTotales();
+  }
+
+  async function guardarEnFirestore(){
+    if (!itemsFactura.length){
+      alert('No hay productos en la cotización.');
+      return;
+    }
+    const fecha = document.getElementById('fechaFactura').value || null;
+    const subtotal = itemsFactura.reduce((acc,i)=>acc + i.price * i.quantity,0);
+    const itbis = document.getElementById('aplicarItbis').checked ? subtotal * 0.18 : 0;
+    const total = subtotal + itbis;
+
+    const payload = {
+      client_name: document.getElementById('clienteNombre').value || null,
+      document_id: document.getElementById('clienteDocumento').value || null,
+      phone: document.getElementById('clienteTelefono').value || null,
+      address: document.getElementById('clienteDireccion').value || null,
+      quote_date: fecha,
+      subtotal,
+      tax: itbis,
+      total,
+      items: itemsFactura,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try{
+      await db.collection('quotes').add(payload);
+      alert('Cotización guardada en el sistema.');
+    }catch(e){
+      console.error('Error guardando cotización:', e);
+      alert('Error al guardar la cotización.');
+    }
+  }
+
+  function inicializarFecha(){
+    const hoy = new Date();
+    const yyyy = hoy.getFullYear();
+    const mm = String(hoy.getMonth()+1).padStart(2,'0');
+    const dd = String(hoy.getDate()).padStart(2,'0');
+    document.getElementById('fechaFactura').value = `${yyyy}-${mm}-${dd}`;
+  }
+
+  window.addEventListener('DOMContentLoaded', ()=>{
+    cargarSettings();
+    cargarProductos();
+    renderFactura();
+    actualizarTotales();
+    inicializarFecha();
+  });
+</script>
+</body>
+</html>
