@@ -169,52 +169,19 @@ tr:nth-child(even){
 
 @media print {
   @page {
-    size: 8.5in 11in;
-    margin: 10mm;
+    size: 8.5in 11in;   /* Tamaño Carta */
+    margin: 10mm;       /* Márgenes adecuados */
   }
 
   body {
-    background: #ffffff !important;
-    color: #000000 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-    margin: 0 !important;
-    padding: 0 !important;
   }
 
   .sidebar {
     display: none !important;
   }
 
-  /* ----- FACTURA BLANCA ----- */
-  .main,
-  .card,
-  table,
-  tr,
-  td,
-  th {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border-color: #000000 !important;
-  }
-
-  /* Quitar cualquier sombra o borde oscuro */
-  .main {
-    box-shadow: none !important;
-    border: none !important;
-  }
-
-  .card {
-    box-shadow: none !important;
-    border: 1px solid #000000 !important;
-  }
-
-  /* Texto negro */
-  h1, h2, h3, label, span, div, p, strong {
-    color: #000000 !important;
-  }
-
-  /* Botones ocultos */
   .btn,
   .btn-secondary,
   .btn-danger {
@@ -225,6 +192,7 @@ tr:nth-child(even){
 
    
   
+
 
 
 
