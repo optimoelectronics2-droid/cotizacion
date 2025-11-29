@@ -167,59 +167,21 @@ tr:nth-child(even){
 
 /* Para impresión de la cotización */
 
-@media print {
-  @page {
-    size: 8.5in 11in;
-    margin: 10mm;
+@media print{
+  body{
+    background:#fff;
+    color:#000;
+    padding:0;
   }
-
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  .card{
+    box-shadow:none;
+    border:none;
+    border-radius:0;
   }
-
-  /* Ocultar menú lateral */
-  .sidebar {
-    display: none !important;
-  }
-
-  /* ESTE ES EL PUNTO CLAVE */
-  /* Quitar TODOS los fondos oscuros */
-  .main,
-  .card,
-  table,
-  tr,
-  td,
-  th {
-    background: #ffffff !important;   /* Sin cuadros negros */
-    color: #000000 !important;
-    box-shadow: none !important;
-    border-color: #000 !important;
-  }
-
-  /* Quitar cualquier borde grueso o sombra */
-  .main {
-    border: none !important;
-    box-shadow: none !important;
-  }
-
-  .card {
-    border: none !important;
-    border-radius: 0 !important;
-  }
-
-  /* Texto siempre negro */
-  h1, h2, h3, label, span, div, p {
-    color: #000000 !important;
-  }
-
-  /* Ocultar botones */
-  .btn, .btn-secondary, .btn-danger, a {
-    display: none !important;
+  .btn, .btn-secondary, .btn-danger, a{
+    display:none !important;
   }
 }
+
+
 
