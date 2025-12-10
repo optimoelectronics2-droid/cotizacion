@@ -343,7 +343,21 @@
 <!-- ====================== MAIN ====================== -->
 <main class="main">
 
-  <!-- Encabezado factura -->
+  
+<!-- ================= BUSCADOR GLOBAL ================= -->
+<div class="card" style="margin-bottom:16px;">
+  <input 
+    type="text" 
+    id="buscadorGlobal"
+    placeholder="Buscar producto por nombre, marca o modelo…"
+    style="width:100%;padding:10px;border-radius:10px;border:1px solid #1f2937;background:#020617;color:#e5e7eb;">
+
+  <div id="resultadosBusqueda"
+       style="display:none;max-height:250px;overflow-y:auto;border-radius:10px;border:1px solid #1f2937;background:#020617;margin-top:6px;">
+  </div>
+</div>
+
+<!-- Encabezado factura -->
   <div class="card">
     <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
 
@@ -1201,10 +1215,67 @@ window.addEventListener("DOMContentLoaded",()=>{
   renderFactura();
   actualizarTotales();
 });
+
+/* ============================================================
+   🔍 BUSCADOR GLOBAL SIN ALTERAR EL SISTEMA ORIGINAL
+=========================================================== */
+function normalizar(t){
+  return t.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-z0-9 ]/g,"");
+}
+
+document.getElementById("buscadorGlobal").addEventListener("input", ()=>{
+  const q = normalizar(document.getElementById("buscadorGlobal").value.trim());
+  const box = document.getElementById("resultadosBusqueda");
+
+  if(!q){
+    box.style.display="none";
+    box.innerHTML="";
+    return;
+  }
+
+  const palabras = q.split(" ");
+  const marcas = ["hp","epson","canon","jbl","myo","zebra","brother","lenovo","dell"];
+
+  const resultados = productos.filter(p=>{
+    const name = normalizar(p.name || "");
+    const code = normalizar(p.code || "");
+
+    const matchMarca = marcas.some(m => name.includes(m));
+
+    return (
+      name.includes(q) ||
+      palabras.every(w => name.includes(w)) ||
+      code.includes(q) ||
+      (matchMarca && palabras.some(w=>name.includes(w)))
+    );
+  });
+
+  box.innerHTML="";
+  box.style.display="block";
+
+  resultados.slice(0,20).forEach(p=>{
+    const item=document.createElement("div");
+    item.style.padding="10px";
+    item.style.cursor="pointer";
+    item.style.borderBottom="1px solid #1f2937";
+    item.innerHTML = `<strong>${p.name}</strong><br><span style="color:#10b981;">RD$ ${p.price}</span>`;
+    item.onclick=()=>{
+      document.getElementById("productoSeleccionado").value = p.id;
+      box.style.display="none";
+    };
+    box.appendChild(item);
+  });
+});
+
 </script>
 
 </body>
 </html>
+
+
+
 
 
 
