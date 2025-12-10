@@ -75,7 +75,7 @@
       <button class="btn" onclick="guardarSettings()">Guardar datos de tienda</button>
     </div>
 
-    <!-- Productos -->
+    <!-- Productos (crear / cargar desde Excel / listado simple) -->
     <div class="card">
       <h3>Productos</h3>
       <div class="row">
@@ -130,6 +130,72 @@
       </div>
     </div>
 
+    <!-- 🔹 INVENTARIO EDITABLE (name, price, description) -->
+    <div class="card">
+      <h3>Inventario (editar productos)</h3>
+      <p class="small">
+        Aquí puedes buscar productos, seleccionarlos y editar <strong>nombre</strong>, <strong>precio</strong> y
+        <strong>descripción</strong>. Ideal como panel de inventario.
+      </p>
+
+      <!-- Buscador -->
+      <div class="row">
+        <div style="flex:1;">
+          <label for="inventarioSearch">Buscar por nombre</label>
+          <input id="inventarioSearch" type="text" placeholder="Escribe parte del nombre..." oninput="filtrarInventario()">
+        </div>
+      </div>
+
+      <div class="row" style="align-items:flex-start;gap:16px;flex-wrap:wrap;">
+        <!-- Tabla inventario -->
+        <div style="flex:2;min-width:260px;">
+          <label>Listado de productos (inventario)</label>
+          <div style="max-height:260px;overflow:auto;border-radius:12px;border:1px solid #111827;">
+            <table>
+              <thead>
+              <tr>
+                <th>Nombre</th>
+                <th class="text-right">Precio</th>
+                <th>Descripción</th>
+              </tr>
+              </thead>
+              <tbody id="tablaInventario"></tbody>
+            </table>
+          </div>
+          <p class="small" id="inventarioCount" style="margin-top:4px;"></p>
+        </div>
+
+        <!-- Panel de edición -->
+        <div style="flex:1;min-width:220px;">
+          <label>Editar producto seleccionado</label>
+          <input type="hidden" id="editProductId">
+
+          <div>
+            <label for="editNombreProducto">Nombre</label>
+            <input id="editNombreProducto" type="text" placeholder="Nombre del producto">
+          </div>
+
+          <div>
+            <label for="editPrecioProducto">Precio (RD$)</label>
+            <input id="editPrecioProducto" type="number" step="0.01">
+          </div>
+
+          <div>
+            <label for="editDescripcionProducto">Descripción</label>
+            <input id="editDescripcionProducto" type="text" placeholder="Descripción">
+          </div>
+
+          <button class="btn" style="margin-top:8px;" onclick="guardarEdicionProducto()">
+            Guardar cambios
+          </button>
+          <p class="small" style="margin-top:4px;">
+            Selecciona un producto de la tabla para cargar sus datos aquí.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- 🔹 FIN INVENTARIO -->
+
     <!-- Cotizaciones -->
     <div class="card">
       <h3>Cotizaciones recientes</h3>
@@ -160,6 +226,9 @@
 <script src="firebase-config.js"></script>
 
 <script>
+  // =====================
+  //  LOGIN / SESIÓN ADMIN
+  // =====================
   function mostrarAdmin(logged,user){
     document.getElementById('loginCard').style.display = logged ? 'none' : 'block';
     document.getElementById('adminArea').style.display = logged ? 'block' : 'none';
@@ -203,10 +272,14 @@
     await Promise.all([
       cargarSettingsAdmin(),
       cargarProductosAdmin(),
-      cargarQuotesAdmin()
+      cargarQuotesAdmin(),
+      cargarInventarioAdmin()   // 🔹 también cargamos inventario
     ]);
   }
 
+  // =====================
+  //  SETTINGS / TIENDA
+  // =====================
   async function cargarSettingsAdmin(){
     try{
       const docRef = db.collection('settings').doc('principal');
@@ -263,6 +336,9 @@
     }
   }
 
+  // =====================
+  //  PRODUCTOS (CREAR / LISTA SIMPLE)
+  // =====================
   async function cargarProductosAdmin(){
     try{
       const snap = await db.collection('products').orderBy('createdAt','desc').get();
@@ -312,6 +388,7 @@
       document.getElementById('precioProducto').value='';
       document.getElementById('descripcionProducto').value='';
       cargarProductosAdmin();
+      cargarInventarioAdmin(); // 🔹 para que el inventario se actualice
     }catch(e){
       console.error('Error creando producto:', e);
       alert('Error al crear producto.');
@@ -323,12 +400,16 @@
     try{
       await db.collection('products').doc(id).delete();
       cargarProductosAdmin();
+      cargarInventarioAdmin(); // 🔹 sincronizar inventario
     }catch(e){
       console.error('Error borrando producto:', e);
       alert('Error eliminando producto.');
     }
   }
 
+  // =====================
+  //  CARGA MASIVA EXCEL
+  // =====================
   function procesarExcel(e){
     const file = e.target.files[0];
     if (!file) return;
@@ -387,12 +468,16 @@
       await batch.commit();
       status.textContent = `Se insertaron ${productos.length} productos.`;
       cargarProductosAdmin();
+      cargarInventarioAdmin(); // 🔹 actualizar inventario
     }catch(e){
       console.error('Error bulk:', e);
       status.textContent = 'Error al insertar productos.';
     }
   }
 
+  // =====================
+  //  COTIZACIONES
+  // =====================
   async function cargarQuotesAdmin(){
     try{
       const snap = await db.collection('quotes')
@@ -417,6 +502,110 @@
       console.error('Error cargando quotes:', e);
     }
   }
+
+  // =====================
+  //  INVENTARIO (BUSCAR + EDITAR name/price/description)
+  // =====================
+  let inventarioCache = [];
+
+  async function cargarInventarioAdmin(){
+    try{
+      const snap = await db.collection('products')
+        .orderBy('name','asc')
+        .get();
+
+      inventarioCache = [];
+      snap.forEach(doc=>{
+        inventarioCache.push({
+          id: doc.id,
+          ...(doc.data() || {})
+        });
+      });
+
+      renderInventarioTabla(inventarioCache);
+    }catch(e){
+      console.error('Error cargando inventario:', e);
+    }
+  }
+
+  function renderInventarioTabla(lista){
+    const tbody = document.getElementById('tablaInventario');
+    const countLabel = document.getElementById('inventarioCount');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    lista.forEach(p=>{
+      const tr = document.createElement('tr');
+      tr.style.cursor = 'pointer';
+      tr.onclick = ()=> seleccionarProductoInventario(p.id);
+
+      tr.innerHTML = `
+        <td>${p.name || ''}</td>
+        <td class="text-right">RD$ ${(Number(p.price)||0).toFixed(2)}</td>
+        <td>${p.description || ''}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    if (countLabel){
+      countLabel.textContent = `${lista.length} producto(s) en la vista de inventario.`;
+    }
+  }
+
+  function filtrarInventario(){
+    const q = (document.getElementById('inventarioSearch').value || '').toLowerCase();
+    if (!q){
+      renderInventarioTabla(inventarioCache);
+      return;
+    }
+    const filtrados = inventarioCache.filter(p=>
+      (p.name || '').toLowerCase().includes(q)
+    );
+    renderInventarioTabla(filtrados);
+  }
+
+  async function seleccionarProductoInventario(id){
+    const prod = inventarioCache.find(p=>p.id === id);
+    if (!prod) return;
+
+    document.getElementById('editProductId').value = prod.id;
+    document.getElementById('editNombreProducto').value = prod.name || '';
+    document.getElementById('editPrecioProducto').value = prod.price || '';
+    document.getElementById('editDescripcionProducto').value = prod.description || '';
+  }
+
+  async function guardarEdicionProducto(){
+    const id = document.getElementById('editProductId').value;
+    const name = document.getElementById('editNombreProducto').value.trim();
+    const precioRaw = document.getElementById('editPrecioProducto').value;
+    const description = document.getElementById('editDescripcionProducto').value.trim();
+    const price = parseFloat(String(precioRaw).replace(',','.'));
+
+    if (!id){
+      alert('Primero selecciona un producto de la lista de inventario.');
+      return;
+    }
+    if (!name || isNaN(price)){
+      alert('Nombre y precio válidos requeridos para actualizar.');
+      return;
+    }
+
+    try{
+      await db.collection('products').doc(id).set({
+        name,
+        price,
+        description: description || ''
+      },{merge:true});
+      alert('Producto actualizado correctamente.');
+      await cargarInventarioAdmin();
+      await cargarProductosAdmin();
+    }catch(e){
+      console.error('Error actualizando producto:', e);
+      alert('Error al actualizar el producto.');
+    }
+  }
 </script>
 </body>
 </html>
+
+
