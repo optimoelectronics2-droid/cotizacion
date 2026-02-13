@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trifusion Technologies - Cotizador</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Botón Secreto Admin (Arriba) -->
+        <button id="adminBtn" class="admin-secret-btn" onclick="toggleAdminPanel()">
+            <i class="fas fa-lock"></i> Solo Trifusion
+        </button>
+
+        <!-- Header Principal -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <i class="fas fa-microchip icon-logo"></i>
+                    <div class="brand-text">
+                        <h1>Trifusion Technologies</h1>
+                        <p class="tagline">Soluciones Tecnológicas Premium</p>
+                    </div>
+                </div>
+                <div class="contact-info">
+                    <a href="https://wa.me/18298725163" class="whatsapp-btn" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>+1 (829) 872-5163</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Admin (Oculto inicialmente) -->
+        <div id="adminPanel" class="admin-panel" style="display: none;">
+            <div class="admin-header">
+                <h2><i class="fas fa-user-shield"></i> Panel de Administración</h2>
+                <button class="btn-close" onclick="toggleAdminPanel()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="admin-content">
+                <div class="admin-login">
+                    <div class="login-form">
+                        <h3>Iniciar Sesión</h3>
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                            <input type="email" id="adminEmail" placeholder="admin@trifusion.com">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-lock"></i> Contraseña</label>
+                            <input type="password" id="adminPassword" placeholder="••••••••">
+                        </div>
+                        <button class="btn-login" onclick="login()">
+                            <i class="fas fa-sign-in-alt"></i> Entrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Admin (Oculto hasta login) - FACTURACIÓN -->
+        <div id="dashboard" style="display: none;">
+            <div class="dashboard-header">
+                <h2><i class="fas fa-file-invoice"></i> Panel de Facturación</h2>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+
+            <!-- Tabs Admin -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('facturacion')">
+                    <i class="fas fa-file-invoice-dollar"></i> Facturación
+                </button>
+                <button class="tab-btn" onclick="showTab('productos')">
+                    <i class="fas fa-boxes"></i> Productos
+                </button>
+                <button class="tab-btn" onclick="showTab('tienda')">
+                    <i class="fas fa-store"></i> Tienda
+                </button>
+                <button class="tab-btn" onclick="showTab('historial')">
+                    <i class="fas fa-history"></i> Historial de Cotizaciones
+                </button>
+            </div>
+
+            <!-- Tab Facturación - IGUAL A COTIZACIÓN PERO SIN ENVÍO -->
+            <div id="facturacion" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-user"></i> Datos del Cliente</h3>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Nombre Completo *</label>
+                            <input type="text" id="adminClientName" placeholder="Juan Pérez García">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-id-card"></i> Cédula / RNC *</label>
+                            <input type="text" id="adminClientDoc" placeholder="001-0000000-0">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-mobile-alt"></i> Teléfono *</label>
+                            <input type="tel" id="adminClientPhone" placeholder="+1 (809) 000-0000">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Dirección</label>
+                            <input type="text" id="adminClientAddress" placeholder="Calle Principal #123">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-calendar"></i> Fecha</label>
+                            <input type="date" id="adminInvoiceDate">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-barcode"></i> Número de Factura *</label>
+                            <input type="text" id="adminInvoiceNumber" placeholder="FAC-001">
+                        </div>
+                    </div>
+                    
+                    <!-- Buscador de Productos - IGUAL A COTIZACIÓN -->
+                    <div class="search-section" style="margin-top: 20px;">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="adminProductSearch" placeholder="🔍 Busca por nombre, modelo o categoría..." onkeyup="searchAdminProducts()">
+                            <button class="btn-search" onclick="openAdminProductModal()">
+                                <i class="fas fa-plus"></i> Agregar Producto
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Productos Seleccionados - IGUAL A COTIZACIÓN -->
+                    <div class="selected-products" style="margin-top: 20px;">
+                        <h3><i class="fas fa-shopping-cart"></i> Productos Seleccionados</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-box"></i> Producto</th>
+                                        <th class="text-center"><i class="fas fa-hashtag"></i> Cantidad</th>
+                                        <th class="text-right"><i class="fas fa-tag"></i> Precio Unitario</th>
+                                        <th class="text-right"><i class="fas fa-calculator"></i> Subtotal</th>
+                                        <th class="text-center"><i class="fas fa-trash"></i> Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminInvoiceProducts">
+                                    <tr>
+                                        <td colspan="5" class="empty-state">
+                                            <i class="fas fa-shopping-basket"></i>
+                                            <p>Aún no has agregado productos</p>
+                                            <button class="btn-add-first" onclick="openAdminProductModal()">
+                                                <i class="fas fa-plus"></i> Agregar tu primer producto
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Totales - IGUAL A COTIZACIÓN PERO SIN ENVÍO -->
+                    <div class="totals-section" style="margin-top: 20px;">
+                        <div class="totals-grid">
+                            <div class="total-item">
+                                <span class="label"><i class="fas fa-money-bill-wave"></i> Subtotal:</span>
+                                <span class="value" id="adminSubtotal">RD$ 0.00</span>
+                            </div>
+                            <div class="total-item">
+                                <span class="label">
+                                    <input type="checkbox" id="adminApplyITBIS" onchange="calculateTotalsAdmin()">
+                                    ITBIS 18%
+                                </span>
+                                <span class="value" id="adminItbis">RD$ 0.00</span>
+                            </div>
+                            <div class="total-item total-final">
+                                <span class="label"><i class="fas fa-calculator"></i> Total:</span>
+                                <span class="value" id="adminTotal">RD$ 0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción - IGUAL A COTIZACIÓN -->
+                    <div class="action-buttons" style="margin-top: 20px;">
+                        <button class="btn-secondary" onclick="newInvoice()">
+                            <i class="fas fa-plus"></i> Nueva Factura
+                        </button>
+                        <button class="btn-save" onclick="saveInvoice()">
+                            <i class="fas fa-save"></i> Guardar Factura
+                        </button>
+                        <button class="btn-whatsapp" onclick="sendInvoiceToWhatsApp()">
+                            <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
+                        </button>
+                        <button class="btn-print" onclick="printInvoiceAdmin()">
+                            <i class="fas fa-print"></i> Imprimir / PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resto de tabs (productos, tienda, historial) igual que antes -->
+            <div id="productos" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-plus-circle"></i> Agregar Producto</h3>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label><i class="fas fa-barcode"></i> Código (opcional)</label>
+                            <input type="text" id="productCode" placeholder="SKU-001">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-box"></i> Nombre *</label>
+                            <input type="text" id="productName" placeholder="Monitor Dell 24''">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-dollar-sign"></i> Precio (RD$) *</label>
+                            <input type="number" id="productPrice" placeholder="5000" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-list"></i> Categoría *</label>
+                            <select id="productCategory">
+                                <option value="">-- Selecciona --</option>
+                                <option value="telefonos">Teléfonos</option>
+                                <option value="monitores">Monitores</option>
+                                <option value="impresoras">Impresoras</option>
+                                <option value="ups">UPS</option>
+                                <option value="accesorios">Accesorios</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-align-left"></i> Descripción</label>
+                        <textarea id="productDesc" placeholder="Descripción detallada..."></textarea>
+                    </div>
+                    <button class="btn-primary" onclick="addProduct()">
+                        <i class="fas fa-plus"></i> Agregar Producto
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> Inventario</h3>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInventory" placeholder="Buscar por nombre, modelo o categoría..." onkeyup="searchInventory()">
+                        </div>
+                    </div>
+                    <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-tag"></i> Producto</th>
+                                    <th><i class="fas fa-folder"></i> Categoría</th>
+                                    <th class="text-right"><i class="fas fa-dollar-sign"></i> Precio</th>
+                                    <th><i class="fas fa-cogs"></i> Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTable">
+                                <tr>
+                                    <td colspan="4" class="text-center">Cargando productos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tienda" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-store"></i> Configuración de Tienda</h3>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Nombre de la Tienda</label>
+                            <input type="text" id="storeName" placeholder="Trifusion Technologies">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Teléfono / WhatsApp</label>
+                            <input type="tel" id="storePhone" placeholder="+1 (829) 872-5163">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker-alt"></i> Dirección</label>
+                            <input type="text" id="storeAddress" placeholder="Autopista de San Isidro, Santo Domingo">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-image"></i> Logo (URL)</label>
+                            <input type="url" id="storeLogo" placeholder="https://...">
+                            <img id="logoPreview" style="display: none; max-height: 80px; margin-top: 10px;">
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="saveStore()">
+                        <i class="fas fa-save"></i> Guardar Configuración
+                    </button>
+                </div>
+            </div>
+
+            <div id="historial" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history"></i> Historial de Cotizaciones</h3>
+                        <button class="btn-danger" onclick="clearAllQuotes()" style="padding: 6px 15px; font-size: 12px;">
+                            <i class="fas fa-trash"></i> Limpiar Todo el Historial
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-user"></i> Cliente</th>
+                                    <th><i class="fas fa-id-card"></i> Cédula</th>
+                                    <th><i class="fas fa-mobile-alt"></i> Teléfono</th>
+                                    <th class="text-right"><i class="fas fa-calculator"></i> Total</th>
+                                    <th><i class="fas fa-calendar"></i> Fecha</th>
+                                    <th><i class="fas fa-cogs"></i> Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quotesTable">
+                                <tr>
+                                    <td colspan="6" class="text-center">Cargando cotizaciones...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Pública de Cotización -->
+        <div class="cotizacion-section">
+            <div class="section-header">
+                <h2><i class="fas fa-calculator"></i> Genera tu Cotización</h2>
+                <p>Selecciona los productos que necesitas y obtén tu cotización instantánea</p>
+            </div>
+
+            <!-- Datos Personales del Cliente -->
+            <div class="card" style="background: rgba(30, 41, 59, 0.5); border: 2px solid var(--accent-primary);">
+                <div class="card-header">
+                    <h3><i class="fas fa-user"></i> Tus Datos Personales</h3>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Nombre Completo *</label>
+                        <input type="text" id="clientName" placeholder="Juan Pérez García" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-id-card"></i> Cédula / RNC *</label>
+                        <input type="text" id="clientDoc" placeholder="001-0000000-0" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-mobile-alt"></i> Teléfono *</label>
+                        <input type="tel" id="clientPhone" placeholder="+1 (809) 000-0000" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Dirección</label>
+                        <input type="text" id="clientAddress" placeholder="Calle Principal #123">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buscador de Productos -->
+            <div class="search-section">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="productSearch" placeholder="🔍 Busca por nombre, modelo o categoría..." onkeyup="searchProducts()">
+                    <button class="btn-search" onclick="openProductModal()">
+                        <i class="fas fa-plus"></i> Agregar Producto
+                    </button>
+                </div>
+            </div>
+
+            <!-- Productos Seleccionados -->
+            <div class="selected-products">
+                <h3><i class="fas fa-shopping-cart"></i> Productos Seleccionados</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-box"></i> Producto</th>
+                                <th class="text-center"><i class="fas fa-hashtag"></i> Cantidad</th>
+                                <th class="text-right"><i class="fas fa-tag"></i> Precio Unitario</th>
+                                <th class="text-right"><i class="fas fa-calculator"></i> Subtotal</th>
+                                <th class="text-center"><i class="fas fa-trash"></i> Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceProducts">
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <i class="fas fa-shopping-basket"></i>
+                                    <p>Aún no has agregado productos</p>
+                                    <button class="btn-add-first" onclick="openProductModal()">
+                                        <i class="fas fa-plus"></i> Agregar tu primer producto
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Ubicación y Envío - CON OPCIÓN DE QUITAR -->
+            <div class="shipping-section">
+                <div class="shipping-header">
+                    <h3><i class="fas fa-truck"></i> Costo de Envío</h3>
+                </div>
+                <div class="shipping-content">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                        <input type="checkbox" id="includeShipping" onchange="toggleShipping()" checked>
+                        <label for="includeShipping" style="margin: 0; cursor: pointer;">
+                            <i class="fas fa-truck"></i> Incluir costo de envío
+                        </label>
+                    </div>
+                    <div id="shippingDetails" style="display: block;">
+                        <div class="location-status" id="locationStatus">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Comparte tu ubicación para calcular el costo de envío</span>
+                            <button class="btn-location" id="shareLocationBtn">
+                                <i class="fas fa-location-arrow"></i> Compartir Ubicación
+                            </button>
+                        </div>
+                        <div class="shipping-cost">
+                            <strong>Envío:</strong> <span id="shippingCostDisplay">RD$ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Totales -->
+            <div class="totals-section">
+                <div class="totals-grid">
+                    <div class="total-item">
+                        <span class="label"><i class="fas fa-money-bill-wave"></i> Subtotal:</span>
+                        <span class="value" id="subtotal">RD$ 0.00</span>
+                    </div>
+                    <div class="total-item">
+                        <span class="label">
+                            <input type="checkbox" id="applyITBIS" onchange="calculateTotals()">
+                            ITBIS 18%
+                        </span>
+                        <span class="value" id="itbis">RD$ 0.00</span>
+                    </div>
+                    <div class="total-item">
+                        <span class="label"><i class="fas fa-truck"></i> Envío:</span>
+                        <span class="value" id="shipping">RD$ 0.00</span>
+                    </div>
+                    <div class="total-item total-final">
+                        <span class="label"><i class="fas fa-calculator"></i> Total:</span>
+                        <span class="value" id="total">RD$ 0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="action-buttons">
+                <button class="btn-secondary" onclick="newQuote()">
+                    <i class="fas fa-plus"></i> Nueva Cotización
+                </button>
+                <button class="btn-save" onclick="saveQuote()">
+                    <i class="fas fa-save"></i> Guardar Cotización
+                </button>
+                <button class="btn-whatsapp" onclick="sendToWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
+                </button>
+                <button class="btn-print" onclick="printInvoice()">
+                    <i class="fas fa-print"></i> Imprimir / PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Buscar/Agregar Productos (Público) -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-search"></i> Buscar Producto</h3>
+                <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-box-modal">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="modalProductSearch" placeholder="Busca por nombre, modelo o categoría..." onkeyup="filterProductsModal()">
+                </div>
+                <div class="products-list" id="productsListModal">
+                    <div class="loading">Cargando productos...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Buscar/Agregar Productos (Admin) -->
+    <div id="adminProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-search"></i> Buscar Producto</h3>
+                <button class="modal-close" onclick="closeAdminProductModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-box-modal">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="adminModalProductSearch" placeholder="Busca por nombre, modelo o categoría..." onkeyup="filterAdminProductsModal()">
+                </div>
+                <div class="products-list" id="adminProductsListModal">
+                    <div class="loading">Cargando productos...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuración Firebase -->
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
