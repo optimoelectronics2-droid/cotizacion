@@ -433,6 +433,12 @@
                                 <i class="fas fa-location-arrow"></i>
                                 <span id="locationButtonText">Compartir Ubicación</span>
                             </button>
+                            <div class="manual-zone-selector" id="manualZoneSelector">
+                                <div class="zone-divider"><span>o selecciona tu zona</span></div>
+                                <select id="shippingZoneSelect" onchange="onZoneSelect(this)">
+                                    <option value="">— Selecciona tu zona de envío —</option>
+                                </select>
+                            </div>
                             <div class="shipping-info">
                                 <strong>Costo de envío:</strong>
                                 <span id="shippingCostDisplay" class="shipping-cost">RD$ 0.00</span>

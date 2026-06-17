@@ -740,34 +740,39 @@ const SHIPPING_ZONES = [
 ];
 
 function showManualShippingSelector() {
+    const selector = document.getElementById('manualZoneSelector');
+    if (!selector) return;
+    const select = document.getElementById('shippingZoneSelect');
+    if (!select) return;
+
+    // Poblar opciones si no están
+    if (select.options.length <= 1) {
+        SHIPPING_ZONES.forEach((z, i) => {
+            const est = Math.round(((z.min + z.max) / 2) * z.costPerKm);
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = `${z.name} (~RD$ ${est.toLocaleString()})`;
+            select.appendChild(opt);
+        });
+    }
+
+    selector.style.display = 'block';
+    select.focus();
+}
+
+function onZoneSelect(el) {
     const costDisplay = document.getElementById('shippingCostDisplay');
     const btn = document.getElementById('locationButtonText');
+    if (!costDisplay || !btn) return;
 
-    // Si ya hay un selector, no duplicar
-    if (document.getElementById('shippingZoneSelect')) return;
-
-    const container = document.getElementById('shippingDetails');
-    const select = document.createElement('select');
-    select.id = 'shippingZoneSelect';
-
-    select.innerHTML = '<option value="">— Selecciona tu zona de envío —</option>' +
-        SHIPPING_ZONES.map((z, i) => {
-            const est = Math.round(((z.min + z.max) / 2) * z.costPerKm);
-            return `<option value="${i}">${z.name} (~RD$ ${est.toLocaleString()})</option>`;
-        }).join('');
-
-    select.onchange = function() {
-        const zone = SHIPPING_ZONES[parseInt(this.value)];
-        if (zone) {
-            const avgKm = (zone.min + zone.max) / 2;
-            shippingCost = Math.round(avgKm * zone.costPerKm);
-            costDisplay.textContent = `RD$ ${shippingCost.toLocaleString()}`;
-            btn.textContent = 'Zona seleccionada ✓';
-            calculateTotals();
-        }
-    };
-
-    container.insertBefore(select, container.querySelector('.shipping-info'));
+    const zone = SHIPPING_ZONES[parseInt(el.value)];
+    if (zone) {
+        const avgKm = (zone.min + zone.max) / 2;
+        shippingCost = Math.round(avgKm * zone.costPerKm);
+        costDisplay.textContent = `RD$ ${shippingCost.toLocaleString()}`;
+        btn.textContent = 'Zona seleccionada ✓';
+        calculateTotals();
+    }
 }
 
 async function calculateShipping(lat, lng, btn, costDisplay) {
