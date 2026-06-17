@@ -1001,7 +1001,6 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 
 .manual-zone-selector {
-  display: none;
   margin-top: 10px;
   padding-top: 10px;
 }

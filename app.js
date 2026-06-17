@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
         updateUI();
     });
     
-    // Auto-detectar ubicación al cargar
-    setTimeout(() => autoDetectLocation(), 500);
+    // Inicializar UI de envío (selector manual visible + GPS en background)
+    setTimeout(initShippingUI, 300);
 });
 
 // ============================================
@@ -661,73 +661,12 @@ function toggleShipping() {
     
     if (!includeShipping) {
         shippingCost = 0;
-        _locationFound = false;
         document.getElementById('shippingCostDisplay').textContent = 'RD$ 0.00';
         document.getElementById('locationButtonText').textContent = 'Compartir Ubicación';
         document.getElementById('locationButtonText').disabled = false;
-    } else {
-        // Re-detect location when re-enabled
-        setTimeout(autoDetectLocation, 300);
     }
     
     calculateTotals();
-}
-
-let _locationFound = false;
-
-function autoDetectLocation() {
-    const btn = document.getElementById('locationButtonText');
-    const costDisplay = document.getElementById('shippingCostDisplay');
-    const shippingEnabled = document.getElementById('includeShipping')?.checked;
-    if (!btn || !costDisplay || !shippingEnabled) return;
-
-    btn.textContent = 'Obteniendo ubicación GPS...';
-    btn.disabled = true;
-    _locationFound = false;
-
-    if (!navigator.geolocation) {
-        btn.textContent = 'GPS no disponible';
-        btn.disabled = false;
-        showManualShippingSelector();
-        return;
-    }
-
-    // Try GPS with high accuracy, no cache
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            if (_locationFound) return;
-            _locationFound = true;
-            btn.textContent = 'Ubicación exacta obtenida';
-            calculateShipping(position.coords.latitude, position.coords.longitude, btn, costDisplay);
-        },
-        (error) => {
-            if (_locationFound) return;
-            console.warn('GPS error:', error.message);
-            // Retry once with lower accuracy but longer timeout
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    if (_locationFound) return;
-                    _locationFound = true;
-                    btn.textContent = 'Ubicación obtenida';
-                    calculateShipping(position.coords.latitude, position.coords.longitude, btn, costDisplay);
-                },
-                (error2) => {
-                    if (_locationFound) return;
-                    console.warn('GPS retry failed:', error2.message);
-                    btn.textContent = 'Compartir ubicación manualmente';
-                    btn.disabled = false;
-                    showManualShippingSelector();
-                },
-                { enableHighAccuracy: false, timeout: 15000, maximumAge: 0 }
-            );
-        },
-        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
-    );
-}
-
-function shareLocation() {
-    if (_locationFound) return;
-    autoDetectLocation();
 }
 
 // Zonas de envío para República Dominicana (RD$)
@@ -739,28 +678,71 @@ const SHIPPING_ZONES = [
     { name: 'Provincias lejanas', min: 0, max: 999, costPerKm: 45 }
 ];
 
-function showManualShippingSelector() {
-    const selector = document.getElementById('manualZoneSelector');
-    if (!selector) return;
+function initShippingUI() {
     const select = document.getElementById('shippingZoneSelect');
     if (!select) return;
 
-    // Poblar opciones si no están
-    if (select.options.length <= 1) {
-        SHIPPING_ZONES.forEach((z, i) => {
-            const est = Math.round(((z.min + z.max) / 2) * z.costPerKm);
-            const opt = document.createElement('option');
-            opt.value = i;
-            opt.textContent = `${z.name} (~RD$ ${est.toLocaleString()})`;
-            select.appendChild(opt);
-        });
+    // Poblar opciones
+    SHIPPING_ZONES.forEach((z, i) => {
+        const est = Math.round(((z.min + z.max) / 2) * z.costPerKm);
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `${z.name} (~RD$ ${est.toLocaleString()})`;
+        select.appendChild(opt);
+    });
+
+    // GPS en background — sin bloquear la UI
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const btn = document.getElementById('locationButtonText');
+                const costDisplay = document.getElementById('shippingCostDisplay');
+                if (!btn || !costDisplay) return;
+                btn.textContent = 'GPS: ubicación obtenida ✓';
+                btn.disabled = true;
+                calculateShipping(position.coords.latitude, position.coords.longitude, btn, costDisplay);
+                showToast('Ubicación detectada por GPS', 'success');
+            },
+            () => {
+                // GPS no disponible — el selector manual ya está visible
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        );
+    }
+}
+
+function shareLocation() {
+    // Forzar nueva detección GPS (por si el usuario quiere reintentar)
+    const btn = document.getElementById('locationButtonText');
+    const costDisplay = document.getElementById('shippingCostDisplay');
+    if (!btn || !costDisplay) return;
+    btn.textContent = 'Obteniendo GPS...';
+    btn.disabled = true;
+
+    if (!navigator.geolocation) {
+        btn.textContent = 'GPS no disponible';
+        btn.disabled = true;
+        showToast('GPS no disponible en este dispositivo. Usa el selector manual.', 'warning');
+        return;
     }
 
-    selector.style.display = 'block';
-    select.focus();
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            btn.textContent = 'GPS: ubicación obtenida ✓';
+            calculateShipping(position.coords.latitude, position.coords.longitude, btn, costDisplay);
+            showToast('Ubicación detectada por GPS', 'success');
+        },
+        (err) => {
+            btn.textContent = 'GPS falló — usa el selector manual';
+            btn.disabled = false;
+            showToast('No se pudo obtener ubicación GPS: ' + err.message, 'warning');
+        },
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+    );
 }
 
 function onZoneSelect(el) {
+    if (!el.value) return;
     const costDisplay = document.getElementById('shippingCostDisplay');
     const btn = document.getElementById('locationButtonText');
     if (!costDisplay || !btn) return;
@@ -771,7 +753,9 @@ function onZoneSelect(el) {
         shippingCost = Math.round(avgKm * zone.costPerKm);
         costDisplay.textContent = `RD$ ${shippingCost.toLocaleString()}`;
         btn.textContent = 'Zona seleccionada ✓';
+        btn.disabled = false;
         calculateTotals();
+        showToast(`Envío calculado: RD$ ${shippingCost.toLocaleString()}`, 'success');
     }
 }
 
