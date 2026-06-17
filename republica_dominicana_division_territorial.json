@@ -1,0 +1,371 @@
+{
+  "pais": "República Dominicana",
+  "actualizado": "2026-06-17",
+  "fuentes": [
+    "Oficina Nacional de Estadística (ONE) - División Territorial",
+    "Ley 176-07 del Distrito Nacional y los Municipios",
+    "Ley 163-01 (creación provincia Santo Domingo)",
+    "Leyes 15-24 y 39-24 (creación municipios La Victoria y La Caleta, 2024)",
+    "Ley Orgánica 345-22 de Regiones Únicas de Planificación"
+  ],
+  "nota_de_alcance": "Este archivo cubre con precisión los niveles oficiales y estables de la división territorial: 3 macro-regiones históricas, 10 regiones únicas de planificación, 31 provincias + el Distrito Nacional, y sus municipios (158 en total). Para el Distrito Nacional, la provincia Santo Domingo y la provincia San Cristóbal se incluye además el nivel de distritos municipales y los sectores/barrios más conocidos, recopilados de fuentes oficiales y públicas. NO incluye los ~10,000 parajes ni los ~5,000 sub-barrios rurales del país completo: ese nivel de detalle (la última 'esquina' de cada paraje) solo existe de forma confiable en el documento oficial 'División Territorial' de la ONE (one.gob.do), y reproducirlo entero aquí tendría alto riesgo de errores. Si necesitas ese nivel para una provincia específica, dímelo y profundizo en esa zona.",
+  "resumen_nacional": {
+    "macro_regiones_historicas": 3,
+    "regiones_unicas_de_planificacion": 10,
+    "provincias": 31,
+    "distrito_nacional": 1,
+    "municipios_total_aprox": 158,
+    "distritos_municipales_total_aprox": 235
+  },
+  "regiones": [
+    {
+      "region": "Cibao Norte",
+      "provincias": ["Santiago", "Puerto Plata", "Espaillat"]
+    },
+    {
+      "region": "Cibao Sur",
+      "provincias": ["La Vega", "Monseñor Nouel", "Sánchez Ramírez"]
+    },
+    {
+      "region": "Cibao Nordeste",
+      "provincias": ["Duarte", "Hermanas Mirabal", "María Trinidad Sánchez", "Samaná"]
+    },
+    {
+      "region": "Cibao Noroeste",
+      "provincias": ["Dajabón", "Montecristi", "Santiago Rodríguez", "Valverde"]
+    },
+    {
+      "region": "Valdesia",
+      "provincias": ["Peravia", "San Cristóbal", "San José de Ocoa"]
+    },
+    {
+      "region": "El Valle",
+      "provincias": ["Azua", "Elías Piña", "San Juan"]
+    },
+    {
+      "region": "Enriquillo",
+      "provincias": ["Bahoruco", "Barahona", "Independencia", "Pedernales"]
+    },
+    {
+      "region": "Yuma",
+      "provincias": ["El Seibo", "La Altagracia", "La Romana"]
+    },
+    {
+      "region": "Higuamo",
+      "provincias": ["Hato Mayor", "Monte Plata", "San Pedro de Macorís"]
+    },
+    {
+      "region": "Ozama",
+      "provincias": ["Distrito Nacional", "Santo Domingo"]
+    }
+  ],
+  "provincias": [
+    {
+      "nombre": "Distrito Nacional",
+      "region": "Ozama",
+      "capital": "Santo Domingo de Guzmán",
+      "municipios": ["Santo Domingo de Guzmán (jurisdicción única, sin municipios internos; se divide en sectores y barrios)"]
+    },
+    {
+      "nombre": "Santo Domingo",
+      "region": "Ozama",
+      "capital": "Santo Domingo Este",
+      "municipios": ["Santo Domingo Este", "Santo Domingo Oeste", "Santo Domingo Norte", "Boca Chica", "Los Alcarrizos", "Pedro Brand", "San Antonio de Guerra", "La Victoria", "La Caleta"]
+    },
+    {
+      "nombre": "Santiago",
+      "region": "Cibao Norte",
+      "capital": "Santiago de los Caballeros",
+      "municipios": ["Santiago de los Caballeros", "Bisonó (Navarrete)", "Jánico", "Licey al Medio", "Puñal", "Sabana Iglesia", "San José de las Matas", "Tamboril", "Villa González", "Baitoa"]
+    },
+    {
+      "nombre": "Puerto Plata",
+      "region": "Cibao Norte",
+      "capital": "San Felipe de Puerto Plata",
+      "municipios": ["San Felipe de Puerto Plata", "Altamira", "Guananico", "Imbert", "Los Hidalgos", "Luperón", "Sosúa", "Villa Isabela", "Villa Montellano"]
+    },
+    {
+      "nombre": "Espaillat",
+      "region": "Cibao Norte",
+      "capital": "Moca",
+      "municipios": ["Moca", "Cayetano Germosén", "Gaspar Hernández", "Jamao al Norte"]
+    },
+    {
+      "nombre": "La Vega",
+      "region": "Cibao Sur",
+      "capital": "Concepción de La Vega",
+      "municipios": ["Concepción de La Vega", "Constanza", "Jarabacoa", "Jima Abajo"]
+    },
+    {
+      "nombre": "Monseñor Nouel",
+      "region": "Cibao Sur",
+      "capital": "Bonao",
+      "municipios": ["Bonao", "Maimón", "Piedra Blanca"]
+    },
+    {
+      "nombre": "Sánchez Ramírez",
+      "region": "Cibao Sur",
+      "capital": "Cotuí",
+      "municipios": ["Cotuí", "Cevicos", "Fantino", "La Mata"]
+    },
+    {
+      "nombre": "Duarte",
+      "region": "Cibao Nordeste",
+      "capital": "San Francisco de Macorís",
+      "municipios": ["San Francisco de Macorís", "Arenoso", "Castillo", "Eugenio María de Hostos", "Las Guáranas", "Pimentel", "Villa Riva"]
+    },
+    {
+      "nombre": "Hermanas Mirabal",
+      "region": "Cibao Nordeste",
+      "capital": "Salcedo",
+      "municipios": ["Salcedo", "Tenares", "Villa Tapia"]
+    },
+    {
+      "nombre": "María Trinidad Sánchez",
+      "region": "Cibao Nordeste",
+      "capital": "Nagua",
+      "municipios": ["Nagua", "Cabrera", "El Factor", "Río San Juan"]
+    },
+    {
+      "nombre": "Samaná",
+      "region": "Cibao Nordeste",
+      "capital": "Santa Bárbara de Samaná",
+      "municipios": ["Santa Bárbara de Samaná", "Las Terrenas", "Sánchez"]
+    },
+    {
+      "nombre": "Dajabón",
+      "region": "Cibao Noroeste",
+      "capital": "Dajabón",
+      "municipios": ["Dajabón", "El Pino", "Loma de Cabrera", "Partido", "Restauración"]
+    },
+    {
+      "nombre": "Montecristi",
+      "region": "Cibao Noroeste",
+      "capital": "San Fernando de Monte Cristi",
+      "municipios": ["San Fernando de Monte Cristi", "Castañuelas", "Guayubín", "Las Matas de Santa Cruz", "Pepillo Salcedo", "Villa Vásquez"]
+    },
+    {
+      "nombre": "Santiago Rodríguez",
+      "region": "Cibao Noroeste",
+      "capital": "Sabaneta",
+      "municipios": ["Sabaneta", "Monción", "Villa Los Almácigos"]
+    },
+    {
+      "nombre": "Valverde",
+      "region": "Cibao Noroeste",
+      "capital": "Mao",
+      "municipios": ["Mao", "Esperanza", "Laguna Salada"]
+    },
+    {
+      "nombre": "Peravia",
+      "region": "Valdesia",
+      "capital": "Baní",
+      "municipios": ["Baní", "Nizao"]
+    },
+    {
+      "nombre": "San Cristóbal",
+      "region": "Valdesia",
+      "capital": "San Cristóbal",
+      "municipios": ["San Cristóbal", "Bajos de Haina", "Cambita Garabitos", "Los Cacaos", "Sabana Grande de Palenque", "San Gregorio de Nigua", "Villa Altagracia", "Yaguate"]
+    },
+    {
+      "nombre": "San José de Ocoa",
+      "region": "Valdesia",
+      "capital": "San José de Ocoa",
+      "municipios": ["San José de Ocoa", "Rancho Arriba", "Sabana Larga"]
+    },
+    {
+      "nombre": "Azua",
+      "region": "El Valle",
+      "capital": "Azua de Compostela",
+      "municipios": ["Azua de Compostela", "Estebanía", "Guayabal", "Las Charcas", "Las Yayas de Viajama", "Padre Las Casas", "Peralta", "Pueblo Viejo", "Sabana Yegua", "Tábara Arriba"]
+    },
+    {
+      "nombre": "Elías Piña",
+      "region": "El Valle",
+      "capital": "Comendador",
+      "municipios": ["Comendador", "Bánica", "El Llano", "Hondo Valle", "Juan Santiago", "Pedro Santana"]
+    },
+    {
+      "nombre": "San Juan",
+      "region": "El Valle",
+      "capital": "San Juan de la Maguana",
+      "municipios": ["San Juan de la Maguana", "Bohechío", "El Cercado", "Juan de Herrera", "Las Matas de Farfán", "Vallejuelo"]
+    },
+    {
+      "nombre": "Bahoruco",
+      "region": "Enriquillo",
+      "capital": "Neiba",
+      "municipios": ["Neiba", "Galván", "Los Ríos", "Tamayo", "Villa Jaragua"]
+    },
+    {
+      "nombre": "Barahona",
+      "region": "Enriquillo",
+      "capital": "Santa Cruz de Barahona",
+      "municipios": ["Santa Cruz de Barahona", "Cabral", "El Peñón", "Enriquillo", "Fundación", "Jaquimeyes", "Las Salinas", "Paraíso", "Polo", "Vicente Noble"]
+    },
+    {
+      "nombre": "Independencia",
+      "region": "Enriquillo",
+      "capital": "Jimaní",
+      "municipios": ["Jimaní", "Cristóbal", "Duvergé", "La Descubierta", "Mella", "Postrer Río"]
+    },
+    {
+      "nombre": "Pedernales",
+      "region": "Enriquillo",
+      "capital": "Pedernales",
+      "municipios": ["Pedernales", "Oviedo"]
+    },
+    {
+      "nombre": "El Seibo",
+      "region": "Yuma",
+      "capital": "Santa Cruz del Seibo",
+      "municipios": ["Santa Cruz del Seibo", "Miches"]
+    },
+    {
+      "nombre": "La Altagracia",
+      "region": "Yuma",
+      "capital": "Salvaleón de Higüey",
+      "municipios": ["Salvaleón de Higüey", "San Rafael del Yuma"]
+    },
+    {
+      "nombre": "La Romana",
+      "region": "Yuma",
+      "capital": "La Romana",
+      "municipios": ["La Romana", "Guaymate", "Villa Hermosa"]
+    },
+    {
+      "nombre": "Hato Mayor",
+      "region": "Higuamo",
+      "capital": "Hato Mayor del Rey",
+      "municipios": ["Hato Mayor del Rey", "El Valle", "Sabana de la Mar"]
+    },
+    {
+      "nombre": "Monte Plata",
+      "region": "Higuamo",
+      "capital": "Monte Plata",
+      "municipios": ["Monte Plata", "Bayaguana", "Boyá", "Peralvillo", "Sabana Grande de Boyá", "Yamasá"]
+    },
+    {
+      "nombre": "San Pedro de Macorís",
+      "region": "Higuamo",
+      "capital": "San Pedro de Macorís",
+      "municipios": ["San Pedro de Macorís", "Consuelo", "Guayacanes", "Los Llanos", "Quisqueya", "Ramón Santana", "San José de Los Llanos"]
+    }
+  ],
+  "santo_domingo_capital_detalle": {
+    "_nota": "Santo Domingo 'la capital' incluye dos entidades distintas: el Distrito Nacional (la ciudad histórica, sin municipios propios) y la provincia Santo Domingo (el llamado 'Gran Santo Domingo', con 9 municipios). Juntas forman la región Ozama.",
+    "distrito_nacional": {
+      "superficie_km2": 91.6,
+      "barrios_oficiales_aprox": 71,
+      "sub_barrios_aprox": 277,
+      "division_administrativa": "3 circunscripciones (cada una con sus propios regidores, diputados, fiscales y jueces), bajo una sola alcaldía (ADN)",
+      "sectores_y_barrios_conocidos": {
+        "zona_colonial_y_centro": ["Ciudad Colonial (Zona Colonial)", "San Miguel", "Santa Bárbara", "San Lázaro", "La Atarazana", "San Antón", "San Carlos", "Villa Francisca", "Ciudad Nueva", "Gazcue", "Centro de los Héroes", "30 de Mayo"],
+        "zona_norte_y_alta": ["Piantini", "Naco", "Evaristo Morales", "La Esperilla", "Julieta", "El Vergel", "Bella Vista", "Mirador Sur", "Mirador Norte", "Cacicazgos", "Arroyo Hondo", "Cerros de Arroyo Hondo", "Viejo Arroyo Hondo", "Los Ríos", "Los Peralejos", "Renacimiento", "Las Praderas", "Honduras", "Jardín Botánico", "La Julia", "Bolívar", "Paraíso", "Serrallés", "Atala", "El Millón", "Miraflores", "Los Prados", "Quisqueya", "Vista Hermosa", "Zona Universitaria", "Ciudad Universitaria"],
+        "zona_este_y_popular": ["Villa Juana", "Villa Consuelo", "Mata Hambre", "Borojol", "Simón Bolívar", "Cristo Rey", "Domingo Savio", "Gualey", "La Zurza", "Capotillo", "24 de Abril", "27 de Febrero", "Ensanche Espaillat", "Ensanche Luperón", "Ensanche La Fe", "Ensanche Ozama", "María Auxiliadora", "San Juan Bosco", "Las Cañitas", "Los Restauradores", "Mejoramiento Social", "Nuestra Señora de la Paz", "Villas Agrícolas", "Buenos Aires de Herrera", "Cristo Rey", "La Hondonada"]
+      }
+    },
+    "provincia_santo_domingo": {
+      "_nota": "Conocida popularmente como 'Gran Santo Domingo'. 9 municipios desde 2024.",
+      "municipios": [
+        {
+          "nombre": "Santo Domingo Este",
+          "es_el_mas_poblado": true,
+          "distritos_municipales": ["San Luis"],
+          "sectores_conocidos": ["Los Mina", "Mendoza", "Ozama", "Villa Duarte", "Invivienda", "Alma Rosa I y II", "Lucerna", "Brisas del Este", "Italia", "Las Américas", "El Almirante", "Carmen Renta", "Cancino Adentro", "Cancino Afuera", "Hainamosa", "Los Frailes I y II", "Las Palmas de Tasajera", "Los Robles", "Las Mercedes", "Las Caobas", "Ciudad Satélite", "Ensanche Ozama", "Megacentro / Av. San Vicente de Paúl", "San José de Mendoza", "El Tamarindo", "La Ureña", "Sabana Larga"]
+        },
+        {
+          "nombre": "Santo Domingo Oeste",
+          "distritos_municipales": [],
+          "sectores_conocidos": ["Manoguayabo", "Engombe", "Bayona", "Herrera", "Las Caobas", "Hato Nuevo", "Palmarejo", "Villa Aura", "Cancino", "El Tanque", "Los Girasoles", "Bella Vista"]
+        },
+        {
+          "nombre": "Santo Domingo Norte",
+          "distritos_municipales": [],
+          "sectores_conocidos": ["Sabana Perdida", "Villa Mella", "Gualey de Villa Mella", "Guaricano", "La Ciénaga", "Cancino", "Los Frailes", "Pantoja", "Sabana Toro", "El Almirante", "Cachón de la Rubia"]
+        },
+        {
+          "nombre": "Boca Chica",
+          "distritos_municipales": ["La Caleta (ahora municipio independiente)"],
+          "sectores_conocidos": ["Boca Chica centro", "Andrés", "La Caleta", "Hipódromo V Centenario", "Punta Caucedo"]
+        },
+        {
+          "nombre": "Los Alcarrizos",
+          "distritos_municipales": ["Palmarejo–Villa Linda", "Pantoja"],
+          "sectores_conocidos": ["Los Alcarrizos centro", "Manoguayabo", "Las Cañitas", "Villa Linda", "El Cacique de Los Alcarrizos"]
+        },
+        {
+          "nombre": "Pedro Brand",
+          "distritos_municipales": ["La Cuaba", "La Guáyiga"],
+          "sectores_conocidos": ["Pedro Brand centro", "Buenos Aires de Pedro Brand", "La Vacama"]
+        },
+        {
+          "nombre": "San Antonio de Guerra",
+          "distritos_municipales": ["Hato Viejo"],
+          "sectores_conocidos": ["Guerra centro", "Hato Viejo", "Las Lagunas"]
+        },
+        {
+          "nombre": "La Victoria",
+          "_nota": "Antiguo distrito municipal de Santo Domingo Norte, elevado a municipio en 2024 (Ley 15-24)",
+          "distritos_municipales": [],
+          "sectores_conocidos": ["La Victoria centro", "Km. 17 (Carretera Mella)"]
+        },
+        {
+          "nombre": "La Caleta",
+          "_nota": "Antiguo distrito municipal de Boca Chica, elevado a municipio en 2024 (Ley 39-24)",
+          "distritos_municipales": [],
+          "sectores_conocidos": ["La Caleta centro", "Cangrejo"]
+        }
+      ]
+    }
+  },
+  "san_cristobal_detalle": {
+    "provincia": "San Cristóbal",
+    "region": "Valdesia",
+    "capital": "San Cristóbal",
+    "municipios": [
+      {
+        "nombre": "San Cristóbal",
+        "es_la_capital_provincial": true,
+        "distritos_municipales": ["Hato Damas"],
+        "sectores_conocidos": ["San Cristóbal centro", "Jeringa", "Pueblo Nuevo", "Yaguasa", "Hatillo", "Madre Vieja", "Los Cocos", "Hatillo Sur"]
+      },
+      {
+        "nombre": "Bajos de Haina",
+        "distritos_municipales": ["El Carril"],
+        "sectores_conocidos": ["Haina centro", "Quita Sueño", "Palenque de Haina", "Catalina", "Nigua de Haina"]
+      },
+      {
+        "nombre": "Cambita Garabitos",
+        "distritos_municipales": ["Cambita El Pueblecito"],
+        "sectores_conocidos": ["Cambita centro", "Sabana Larga de Cambita"]
+      },
+      {
+        "nombre": "Los Cacaos",
+        "distritos_municipales": [],
+        "sectores_conocidos": ["Los Cacaos centro", "Las Auyamas"]
+      },
+      {
+        "nombre": "Sabana Grande de Palenque",
+        "distritos_municipales": [],
+        "sectores_conocidos": ["Sabana Grande de Palenque centro", "Playa Palenque"]
+      },
+      {
+        "nombre": "San Gregorio de Nigua",
+        "distritos_municipales": [],
+        "sectores_conocidos": ["Nigua centro", "Zona Franca de Nigua"]
+      },
+      {
+        "nombre": "Villa Altagracia",
+        "distritos_municipales": ["San José del Puerto", "Medina", "La Cuchilla"],
+        "sectores_conocidos": ["Villa Altagracia centro", "San José del Puerto", "La Cuchilla"]
+      },
+      {
+        "nombre": "Yaguate",
+        "distritos_municipales": ["Doña Ana"],
+        "sectores_conocidos": ["Yaguate centro", "Doña Ana", "Engombe de Yaguate"]
+      }
+    ]
+  }
+}
