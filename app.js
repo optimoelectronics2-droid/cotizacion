@@ -669,93 +669,88 @@ function toggleShipping() {
     calculateTotals();
 }
 
-// Sectores con distancia aproximada por carretera desde la tienda (Plaza Quiñónez, SD Este)
+// Sectores con coordenadas geográficas (cálculo dinámico de distancia)
 const SECTORS = [
-    // === SANTO DOMINGO ESTE (cerca de la tienda) ===
-    { name: 'Plaza Quiñónez (misma zona)', km: 1 },
-    { name: 'Urb. Lucerna', km: 1.5 },
-    { name: 'Los Mameyes', km: 2 },
-    { name: 'Los Mina (centro)', km: 3 },
-    { name: 'Cancino Adentro', km: 3 },
-    { name: 'La Barquita', km: 3 },
-    { name: 'Los Tres Brazos', km: 4 },
-    { name: 'Invivienda', km: 4 },
-    { name: 'Alma Rosa I', km: 4 },
-    { name: 'Los Mina Norte', km: 4 },
-    { name: 'Los Frailes I', km: 5 },
-    { name: 'Alma Rosa II', km: 5 },
-    { name: 'Cancino Afuera', km: 6 },
-    { name: 'Los Frailes II', km: 6 },
-    { name: 'El Almirante', km: 7 },
-    // === SANTO DOMINGO ESTE (San Isidro / Las Américas) ===
-    { name: 'Av. San Isidro / Las Américas', km: 8 },
-    { name: 'San Isidro (entrada)', km: 8 },
-    { name: 'San Isidro (interior)', km: 10 },
+    // === SANTO DOMINGO ESTE ===
+    { name: 'Urb. Lucerna', lat: 18.4930, lng: -69.8430 },
+    { name: 'Los Mameyes', lat: 18.4960, lng: -69.8350 },
+    { name: 'Plaza Quiñónez (misma zona)', lat: 18.4962, lng: -69.8498 },
+    { name: 'Los Mina (centro)', lat: 18.4880, lng: -69.8130 },
+    { name: 'Los Mina Norte', lat: 18.4950, lng: -69.8080 },
+    { name: 'Cancino Adentro', lat: 18.5080, lng: -69.8400 },
+    { name: 'La Barquita', lat: 18.5080, lng: -69.8560 },
+    { name: 'Los Tres Brazos', lat: 18.5000, lng: -69.8690 },
+    { name: 'Invivienda', lat: 18.5050, lng: -69.8180 },
+    { name: 'Alma Rosa I', lat: 18.4950, lng: -69.8300 },
+    { name: 'Alma Rosa II', lat: 18.4920, lng: -69.8220 },
+    { name: 'Cancino Afuera', lat: 18.5300, lng: -69.8300 },
+    { name: 'Los Frailes I', lat: 18.5160, lng: -69.8050 },
+    { name: 'Los Frailes II', lat: 18.5100, lng: -69.7900 },
+    { name: 'El Almirante', lat: 18.5500, lng: -69.8070 },
+    { name: 'Av. San Isidro / Las Américas', lat: 18.5200, lng: -69.7850 },
+    { name: 'San Isidro (entrada)', lat: 18.5300, lng: -69.7700 },
+    { name: 'San Isidro (interior)', lat: 18.5400, lng: -69.7550 },
     // === DISTRITO NACIONAL ===
-    { name: 'Ensanche Ozama', km: 9 },
-    { name: 'Los Mínimos', km: 10 },
-    { name: 'Zona Colonial', km: 12 },
-    { name: 'Villa Consuelo', km: 12 },
-    { name: 'Villa Juana', km: 13 },
-    { name: 'Simón Bolívar', km: 13 },
-    { name: 'Los Restauradores', km: 13 },
-    { name: 'Cristo Rey', km: 14 },
-    { name: 'Gazcue', km: 14 },
-    { name: 'Ensanche La Fe', km: 14 },
-    { name: 'Los Prados', km: 15 },
-    { name: 'Naco', km: 15 },
-    { name: 'Ensanche Quisqueya', km: 15 },
-    { name: 'Piantini', km: 16 },
-    { name: 'Bella Vista', km: 17 },
+    { name: 'Ensanche Ozama', lat: 18.4850, lng: -69.8700 },
+    { name: 'Los Mínimos', lat: 18.4780, lng: -69.8760 },
+    { name: 'Zona Colonial', lat: 18.4730, lng: -69.8830 },
+    { name: 'Villa Consuelo', lat: 18.4840, lng: -69.8950 },
+    { name: 'Villa Juana', lat: 18.4780, lng: -69.9000 },
+    { name: 'Simón Bolívar', lat: 18.4900, lng: -69.9000 },
+    { name: 'Los Restauradores', lat: 18.4950, lng: -69.9050 },
+    { name: 'Cristo Rey', lat: 18.5000, lng: -69.9100 },
+    { name: 'Gazcue', lat: 18.4670, lng: -69.8950 },
+    { name: 'Ensanche La Fe', lat: 18.4750, lng: -69.9100 },
+    { name: 'Los Prados', lat: 18.4700, lng: -69.9200 },
+    { name: 'Ensanche Quisqueya', lat: 18.4780, lng: -69.9150 },
+    { name: 'Naco', lat: 18.4720, lng: -69.9270 },
+    { name: 'Piantini', lat: 18.4670, lng: -69.9330 },
+    { name: 'Bella Vista', lat: 18.4550, lng: -69.9300 },
     // === SANTO DOMINGO NORTE ===
-    { name: 'Los Guaricanos (SD Norte)', km: 18 },
-    { name: 'Villa Mella (SD Norte)', km: 20 },
+    { name: 'Los Guaricanos (SD Norte)', lat: 18.5600, lng: -69.8800 },
+    { name: 'Villa Mella (SD Norte)', lat: 18.5530, lng: -69.8950 },
     // === SANTO DOMINGO OESTE ===
-    { name: 'Herrera (SD Oeste)', km: 18 },
-    { name: 'Engombe (SD Oeste)', km: 20 },
-    { name: 'Manoguayabo (SD Oeste)', km: 22 },
-    // === BOCA CHICA / ANDRÉS ===
-    { name: 'La Caleta', km: 22 },
-    { name: 'Andrés (Boca Chica)', km: 26 },
-    { name: 'Boca Chica (centro)', km: 30 },
+    { name: 'Herrera (SD Oeste)', lat: 18.5100, lng: -69.9500 },
+    { name: 'Engombe (SD Oeste)', lat: 18.5300, lng: -69.9600 },
+    { name: 'Manoguayabo (SD Oeste)', lat: 18.5450, lng: -69.9700 },
+    // === BOCA CHICA ===
+    { name: 'La Caleta', lat: 18.4500, lng: -69.7000 },
+    { name: 'Andrés (Boca Chica)', lat: 18.4600, lng: -69.6600 },
+    { name: 'Boca Chica (centro)', lat: 18.4500, lng: -69.6100 },
     // === SAN CRISTÓBAL ===
-    { name: 'Haina', km: 26 },
-    { name: 'Nigua', km: 28 },
-    { name: 'Madre Vieja (San Cristóbal)', km: 30 },
-    { name: 'San Cristóbal (centro)', km: 34 },
+    { name: 'Haina', lat: 18.5000, lng: -70.0500 },
+    { name: 'Nigua', lat: 18.4800, lng: -70.0800 },
+    { name: 'Madre Vieja (San Cristóbal)', lat: 18.4400, lng: -70.0900 },
+    { name: 'San Cristóbal (centro)', lat: 18.4100, lng: -70.1100 },
     // === OTROS CERCANOS ===
-    { name: 'Guerra', km: 22 },
-    { name: 'Los Llanos (SD Este)', km: 15 },
-    { name: 'El Cachón', km: 25 },
+    { name: 'Guerra', lat: 18.5600, lng: -69.7000 },
+    { name: 'Los Llanos (SD Este)', lat: 18.5200, lng: -69.7800 },
+    { name: 'El Cachón', lat: 18.5100, lng: -69.7200 },
 ];
+
+function calcSectorDistance(sector) {
+    const dist = haversine(STORE_LOCATION.lat, STORE_LOCATION.lng, sector.lat, sector.lng);
+    const roadKm = Math.round(dist * 1.3 * 10) / 10; // Haversine × factor de carretera, 1 decimal
+    const cost = Math.round(roadKm * SHIPPING_COST_PER_KM);
+    return { km: roadKm, cost };
+}
 
 function initShippingUI() {
     const input = document.getElementById('sectorSearch');
     const results = document.getElementById('sectorResults');
     if (!input || !results) return;
 
-    // Mostrar todos los sectores al inicio
     renderSectorResults(results, input, SECTORS);
 
-    // Filtrar mientras escribe
     input.addEventListener('input', function() {
         const q = this.value.toLowerCase().trim();
-        if (!q) {
-            renderSectorResults(results, input, SECTORS);
-            return;
-        }
-        const filtered = SECTORS.filter(s =>
-            s.name.toLowerCase().includes(q) ||
-            s.km.toString().includes(q)
-        );
+        if (!q) { renderSectorResults(results, input, SECTORS); return; }
+        const filtered = SECTORS.filter(s => s.name.toLowerCase().includes(q));
         renderSectorResults(results, input, filtered);
     });
 
-    // Cerrar resultados al hacer clic fuera
     document.addEventListener('click', function(e) {
-        if (!e.target.closest('.manual-zone-selector')) {
-            results.style.display = 'none';
-        }
+        if (!e.target.closest('.manual-zone-selector')) results.style.display = 'none';
     });
 
     input.addEventListener('focus', function() {
@@ -788,11 +783,11 @@ function renderSectorResults(container, input, sectors) {
         return;
     }
     sectors.forEach(s => {
-        const cost = Math.round(s.km * SHIPPING_COST_PER_KM);
+        const { km, cost } = calcSectorDistance(s);
         const div = document.createElement('div');
         div.className = 'sector-item';
         div.innerHTML = `<span class="sector-name">${s.name}</span>
-                         <span class="sector-distance">~${s.km} km</span>
+                         <span class="sector-distance">~${km} km</span>
                          <span class="sector-price">RD$ ${cost.toLocaleString()}</span>`;
         div.addEventListener('click', function() {
             selectSector(s, input);
@@ -808,13 +803,15 @@ function selectSector(sector, input) {
     const btn = document.getElementById('locationButtonText');
     if (!costDisplay || !btn) return;
 
+    const { km, cost } = calcSectorDistance(sector);
+    shippingCost = cost;
+    const roadKm = km;
     input.value = sector.name;
-    shippingCost = Math.round(sector.km * SHIPPING_COST_PER_KM);
     costDisplay.textContent = `RD$ ${shippingCost.toLocaleString()}`;
     btn.textContent = `${sector.name} ✓`;
     btn.disabled = false;
     calculateTotals();
-    showToast(`Envío: ${sector.name} (~${sector.km} km) → RD$ ${shippingCost.toLocaleString()}`, 'success');
+    showToast(`Envío: ${sector.name} → ${roadKm} km → RD$ ${shippingCost.toLocaleString()}`, 'success');
 }
 
 function shareLocation() {
@@ -825,8 +822,8 @@ function shareLocation() {
     btn.disabled = true;
 
     if (!navigator.geolocation) {
-        btn.textContent = 'GPS no disponible';
-        btn.disabled = true;
+        btn.textContent = 'GPS no disponible — busca tu sector';
+        btn.disabled = false;
         showToast('GPS no disponible en este dispositivo. Busca tu sector.', 'warning');
         return;
     }
