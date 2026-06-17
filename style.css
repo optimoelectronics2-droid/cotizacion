@@ -1027,6 +1027,103 @@ input:checked + .slider:before { transform: translateX(18px); }
   background: var(--border);
 }
 
+.sector-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.sector-search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+.sector-search-input {
+  width: 100%;
+  padding: 12px 12px 12px 36px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  box-sizing: border-box;
+}
+.sector-search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-subtle);
+}
+.sector-search-input::placeholder {
+  color: var(--text-muted);
+  opacity: .7;
+}
+
+.sector-results {
+  display: none;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 10;
+  position: relative;
+}
+.sector-results::-webkit-scrollbar {
+  width: 4px;
+}
+.sector-results::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+.sector-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+.sector-item:last-child {
+  border-bottom: none;
+}
+.sector-item:hover {
+  background: rgba(0, 149, 255, 0.08);
+}
+.sector-item:active {
+  background: rgba(0, 149, 255, 0.15);
+}
+.sector-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+.sector-distance {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  min-width: 52px;
+  text-align: right;
+}
+.sector-price {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 700;
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: right;
+}
+.sector-no-results {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
 .shipping-info {
   text-align: center;
   padding: 12px;

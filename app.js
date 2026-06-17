@@ -669,29 +669,100 @@ function toggleShipping() {
     calculateTotals();
 }
 
-// Zonas de envío para República Dominicana (RD$)
-const SHIPPING_ZONES = [
-    { name: 'Santo Domingo Este (cerca de la tienda)', min: 0, max: 5, costPerKm: 45 },
-    { name: 'Santo Domingo (DN)', min: 0, max: 25, costPerKm: 45 },
-    { name: 'Provincia Santo Domingo', min: 0, max: 50, costPerKm: 45 },
-    { name: 'Otras provincias cercanas', min: 0, max: 100, costPerKm: 45 },
-    { name: 'Provincias lejanas', min: 0, max: 999, costPerKm: 45 }
+// Sectores con distancia aproximada por carretera desde la tienda (Plaza Quiñónez, SD Este)
+const SECTORS = [
+    // === SANTO DOMINGO ESTE (cerca de la tienda) ===
+    { name: 'Plaza Quiñónez (misma zona)', km: 1 },
+    { name: 'Urb. Lucerna', km: 1.5 },
+    { name: 'Los Mameyes', km: 2 },
+    { name: 'Los Mina (centro)', km: 3 },
+    { name: 'Cancino Adentro', km: 3 },
+    { name: 'La Barquita', km: 3 },
+    { name: 'Los Tres Brazos', km: 4 },
+    { name: 'Invivienda', km: 4 },
+    { name: 'Alma Rosa I', km: 4 },
+    { name: 'Los Mina Norte', km: 4 },
+    { name: 'Los Frailes I', km: 5 },
+    { name: 'Alma Rosa II', km: 5 },
+    { name: 'Cancino Afuera', km: 6 },
+    { name: 'Los Frailes II', km: 6 },
+    { name: 'El Almirante', km: 7 },
+    // === SANTO DOMINGO ESTE (San Isidro / Las Américas) ===
+    { name: 'Av. San Isidro / Las Américas', km: 8 },
+    { name: 'San Isidro (entrada)', km: 8 },
+    { name: 'San Isidro (interior)', km: 10 },
+    // === DISTRITO NACIONAL ===
+    { name: 'Ensanche Ozama', km: 9 },
+    { name: 'Los Mínimos', km: 10 },
+    { name: 'Zona Colonial', km: 12 },
+    { name: 'Villa Consuelo', km: 12 },
+    { name: 'Villa Juana', km: 13 },
+    { name: 'Simón Bolívar', km: 13 },
+    { name: 'Los Restauradores', km: 13 },
+    { name: 'Cristo Rey', km: 14 },
+    { name: 'Gazcue', km: 14 },
+    { name: 'Ensanche La Fe', km: 14 },
+    { name: 'Los Prados', km: 15 },
+    { name: 'Naco', km: 15 },
+    { name: 'Ensanche Quisqueya', km: 15 },
+    { name: 'Piantini', km: 16 },
+    { name: 'Bella Vista', km: 17 },
+    // === SANTO DOMINGO NORTE ===
+    { name: 'Los Guaricanos (SD Norte)', km: 18 },
+    { name: 'Villa Mella (SD Norte)', km: 20 },
+    // === SANTO DOMINGO OESTE ===
+    { name: 'Herrera (SD Oeste)', km: 18 },
+    { name: 'Engombe (SD Oeste)', km: 20 },
+    { name: 'Manoguayabo (SD Oeste)', km: 22 },
+    // === BOCA CHICA / ANDRÉS ===
+    { name: 'La Caleta', km: 22 },
+    { name: 'Andrés (Boca Chica)', km: 26 },
+    { name: 'Boca Chica (centro)', km: 30 },
+    // === SAN CRISTÓBAL ===
+    { name: 'Haina', km: 26 },
+    { name: 'Nigua', km: 28 },
+    { name: 'Madre Vieja (San Cristóbal)', km: 30 },
+    { name: 'San Cristóbal (centro)', km: 34 },
+    // === OTROS CERCANOS ===
+    { name: 'Guerra', km: 22 },
+    { name: 'Los Llanos (SD Este)', km: 15 },
+    { name: 'El Cachón', km: 25 },
 ];
 
 function initShippingUI() {
-    const select = document.getElementById('shippingZoneSelect');
-    if (!select) return;
+    const input = document.getElementById('sectorSearch');
+    const results = document.getElementById('sectorResults');
+    if (!input || !results) return;
 
-    // Poblar opciones
-    SHIPPING_ZONES.forEach((z, i) => {
-        const est = Math.round(((z.min + z.max) / 2) * z.costPerKm);
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = `${z.name} (~RD$ ${est.toLocaleString()})`;
-        select.appendChild(opt);
+    // Mostrar todos los sectores al inicio
+    renderSectorResults(results, input, SECTORS);
+
+    // Filtrar mientras escribe
+    input.addEventListener('input', function() {
+        const q = this.value.toLowerCase().trim();
+        if (!q) {
+            renderSectorResults(results, input, SECTORS);
+            return;
+        }
+        const filtered = SECTORS.filter(s =>
+            s.name.toLowerCase().includes(q) ||
+            s.km.toString().includes(q)
+        );
+        renderSectorResults(results, input, filtered);
     });
 
-    // GPS en background — sin bloquear la UI
+    // Cerrar resultados al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.manual-zone-selector')) {
+            results.style.display = 'none';
+        }
+    });
+
+    input.addEventListener('focus', function() {
+        if (SECTORS.length > 0) results.style.display = 'block';
+    });
+
+    // GPS en background
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -703,16 +774,50 @@ function initShippingUI() {
                 calculateShipping(position.coords.latitude, position.coords.longitude, btn, costDisplay);
                 showToast('Ubicación detectada por GPS', 'success');
             },
-            () => {
-                // GPS no disponible — el selector manual ya está visible
-            },
+            () => {},
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
         );
     }
 }
 
+function renderSectorResults(container, input, sectors) {
+    container.innerHTML = '';
+    if (sectors.length === 0) {
+        container.innerHTML = '<div class="sector-no-results">No hay sectores que coincidan</div>';
+        container.style.display = 'block';
+        return;
+    }
+    sectors.forEach(s => {
+        const cost = Math.round(s.km * SHIPPING_COST_PER_KM);
+        const div = document.createElement('div');
+        div.className = 'sector-item';
+        div.innerHTML = `<span class="sector-name">${s.name}</span>
+                         <span class="sector-distance">~${s.km} km</span>
+                         <span class="sector-price">RD$ ${cost.toLocaleString()}</span>`;
+        div.addEventListener('click', function() {
+            selectSector(s, input);
+            container.style.display = 'none';
+        });
+        container.appendChild(div);
+    });
+    container.style.display = 'block';
+}
+
+function selectSector(sector, input) {
+    const costDisplay = document.getElementById('shippingCostDisplay');
+    const btn = document.getElementById('locationButtonText');
+    if (!costDisplay || !btn) return;
+
+    input.value = sector.name;
+    shippingCost = Math.round(sector.km * SHIPPING_COST_PER_KM);
+    costDisplay.textContent = `RD$ ${shippingCost.toLocaleString()}`;
+    btn.textContent = `${sector.name} ✓`;
+    btn.disabled = false;
+    calculateTotals();
+    showToast(`Envío: ${sector.name} (~${sector.km} km) → RD$ ${shippingCost.toLocaleString()}`, 'success');
+}
+
 function shareLocation() {
-    // Forzar nueva detección GPS (por si el usuario quiere reintentar)
     const btn = document.getElementById('locationButtonText');
     const costDisplay = document.getElementById('shippingCostDisplay');
     if (!btn || !costDisplay) return;
@@ -722,7 +827,7 @@ function shareLocation() {
     if (!navigator.geolocation) {
         btn.textContent = 'GPS no disponible';
         btn.disabled = true;
-        showToast('GPS no disponible en este dispositivo. Usa el selector manual.', 'warning');
+        showToast('GPS no disponible en este dispositivo. Busca tu sector.', 'warning');
         return;
     }
 
@@ -733,37 +838,19 @@ function shareLocation() {
             showToast('Ubicación detectada por GPS', 'success');
         },
         (err) => {
-            btn.textContent = 'GPS falló — usa el selector manual';
+            btn.textContent = 'GPS no disponible — busca tu sector';
             btn.disabled = false;
-            showToast('No se pudo obtener ubicación GPS: ' + err.message, 'warning');
+            showToast('GPS: ' + err.message + '. Busca tu sector manualmente.', 'warning');
         },
         { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
     );
-}
-
-function onZoneSelect(el) {
-    if (!el.value) return;
-    const costDisplay = document.getElementById('shippingCostDisplay');
-    const btn = document.getElementById('locationButtonText');
-    if (!costDisplay || !btn) return;
-
-    const zone = SHIPPING_ZONES[parseInt(el.value)];
-    if (zone) {
-        const avgKm = (zone.min + zone.max) / 2;
-        shippingCost = Math.round(avgKm * zone.costPerKm);
-        costDisplay.textContent = `RD$ ${shippingCost.toLocaleString()}`;
-        btn.textContent = 'Zona seleccionada ✓';
-        btn.disabled = false;
-        calculateTotals();
-        showToast(`Envío calculado: RD$ ${shippingCost.toLocaleString()}`, 'success');
-    }
 }
 
 async function calculateShipping(lat, lng, btn, costDisplay) {
     try {
         // Intentar OSRM primero
         const controller = new AbortController();
-        const t = setTimeout(() => controller.abort(), 6000);
+        const t = setTimeout(() => controller.abort(), 12000);
         const url = `https://router.project-osrm.org/route/v1/driving/${lng},${lat};${STORE_LOCATION.lng},${STORE_LOCATION.lat}?overview=false`;
         const res = await fetch(url, { signal: controller.signal });
         clearTimeout(t);

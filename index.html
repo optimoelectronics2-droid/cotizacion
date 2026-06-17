@@ -434,10 +434,12 @@
                                 <span id="locationButtonText">Compartir Ubicación</span>
                             </button>
                             <div class="manual-zone-selector" id="manualZoneSelector">
-                                <div class="zone-divider"><span>o selecciona tu zona</span></div>
-                                <select id="shippingZoneSelect" onchange="onZoneSelect(this)">
-                                    <option value="">— Selecciona tu zona de envío —</option>
-                                </select>
+                                <div class="zone-divider"><span>O busca tu sector</span></div>
+                                <div class="sector-search-wrap">
+                                    <i class="fas fa-search sector-search-icon"></i>
+                                    <input type="text" id="sectorSearch" class="sector-search-input" placeholder="Ej: Los Mina, Naco, Gazcue..." autocomplete="off">
+                                </div>
+                                <div id="sectorResults" class="sector-results"></div>
                             </div>
                             <div class="shipping-info">
                                 <strong>Costo de envío:</strong>
