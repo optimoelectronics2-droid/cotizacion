@@ -33,7 +33,9 @@ const device = {
 
 const STORE_LOCATION = { lat: 18.4962009, lng: -69.8497819 };
 const STORE_ADDRESS = 'Plaza Quiñónez Local, C. Club Activo 20-30 #3, Santo Domingo Este, República Dominicana';
-const SHIPPING_COST_PER_KM = 45; // RD$45 por kilómetro
+const SHIPPING_COST_PER_KM = 45;
+const MIN_SHIPPING_COST = 150; // RD$150 flat para < 3km
+const MIN_SHIPPING_KM = 3; // km mínimo para tarifa plana
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', function() {
@@ -49,8 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
         updateUI();
     });
     
-    // Inicializar UI de envío (selector manual visible + GPS en background)
-    setTimeout(initShippingUI, 300);
+    // Cargar división territorial + inicializar UI de envío
+    setTimeout(loadDivisionTerritorial, 300);
 });
 
 // ============================================
@@ -669,69 +671,150 @@ function toggleShipping() {
     calculateTotals();
 }
 
-// Sectores con coordenadas geográficas (cálculo dinámico de distancia)
-const SECTORS = [
-    // === SANTO DOMINGO ESTE ===
-    { name: 'Urb. Lucerna', lat: 18.4930, lng: -69.8430 },
-    { name: 'Los Mameyes', lat: 18.4960, lng: -69.8350 },
-    { name: 'Plaza Quiñónez (misma zona)', lat: 18.4962, lng: -69.8498 },
-    { name: 'Los Mina (centro)', lat: 18.4880, lng: -69.8130 },
-    { name: 'Los Mina Norte', lat: 18.4950, lng: -69.8080 },
-    { name: 'Cancino Adentro', lat: 18.5080, lng: -69.8400 },
-    { name: 'La Barquita', lat: 18.5080, lng: -69.8560 },
-    { name: 'Los Tres Brazos', lat: 18.5000, lng: -69.8690 },
-    { name: 'Invivienda', lat: 18.5050, lng: -69.8180 },
-    { name: 'Alma Rosa I', lat: 18.4950, lng: -69.8300 },
-    { name: 'Alma Rosa II', lat: 18.4920, lng: -69.8220 },
-    { name: 'Cancino Afuera', lat: 18.5300, lng: -69.8300 },
-    { name: 'Los Frailes I', lat: 18.5160, lng: -69.8050 },
-    { name: 'Los Frailes II', lat: 18.5100, lng: -69.7900 },
-    { name: 'El Almirante', lat: 18.5500, lng: -69.8070 },
-    { name: 'Av. San Isidro / Las Américas', lat: 18.5200, lng: -69.7850 },
-    { name: 'San Isidro (entrada)', lat: 18.5300, lng: -69.7700 },
-    { name: 'San Isidro (interior)', lat: 18.5400, lng: -69.7550 },
-    // === DISTRITO NACIONAL ===
-    { name: 'Ensanche Ozama', lat: 18.4850, lng: -69.8700 },
-    { name: 'Los Mínimos', lat: 18.4780, lng: -69.8760 },
-    { name: 'Zona Colonial', lat: 18.4730, lng: -69.8830 },
-    { name: 'Villa Consuelo', lat: 18.4840, lng: -69.8950 },
-    { name: 'Villa Juana', lat: 18.4780, lng: -69.9000 },
-    { name: 'Simón Bolívar', lat: 18.4900, lng: -69.9000 },
-    { name: 'Los Restauradores', lat: 18.4950, lng: -69.9050 },
-    { name: 'Cristo Rey', lat: 18.5000, lng: -69.9100 },
-    { name: 'Gazcue', lat: 18.4670, lng: -69.8950 },
-    { name: 'Ensanche La Fe', lat: 18.4750, lng: -69.9100 },
-    { name: 'Los Prados', lat: 18.4700, lng: -69.9200 },
-    { name: 'Ensanche Quisqueya', lat: 18.4780, lng: -69.9150 },
-    { name: 'Naco', lat: 18.4720, lng: -69.9270 },
-    { name: 'Piantini', lat: 18.4670, lng: -69.9330 },
-    { name: 'Bella Vista', lat: 18.4550, lng: -69.9300 },
-    // === SANTO DOMINGO NORTE ===
-    { name: 'Los Guaricanos (SD Norte)', lat: 18.5600, lng: -69.8800 },
-    { name: 'Villa Mella (SD Norte)', lat: 18.5530, lng: -69.8950 },
-    // === SANTO DOMINGO OESTE ===
-    { name: 'Herrera (SD Oeste)', lat: 18.5100, lng: -69.9500 },
-    { name: 'Engombe (SD Oeste)', lat: 18.5300, lng: -69.9600 },
-    { name: 'Manoguayabo (SD Oeste)', lat: 18.5450, lng: -69.9700 },
-    // === BOCA CHICA ===
-    { name: 'La Caleta', lat: 18.4500, lng: -69.7000 },
-    { name: 'Andrés (Boca Chica)', lat: 18.4600, lng: -69.6600 },
-    { name: 'Boca Chica (centro)', lat: 18.4500, lng: -69.6100 },
-    // === SAN CRISTÓBAL ===
-    { name: 'Haina', lat: 18.5000, lng: -70.0500 },
-    { name: 'Nigua', lat: 18.4800, lng: -70.0800 },
-    { name: 'Madre Vieja (San Cristóbal)', lat: 18.4400, lng: -70.0900 },
-    { name: 'San Cristóbal (centro)', lat: 18.4100, lng: -70.1100 },
-    // === OTROS CERCANOS ===
-    { name: 'Guerra', lat: 18.5600, lng: -69.7000 },
-    { name: 'Los Llanos (SD Este)', lat: 18.5200, lng: -69.7800 },
-    { name: 'El Cachón', lat: 18.5100, lng: -69.7200 },
+// Coordenadas de centros municipales (fallback para sectores sin coordenadas precisas)
+const MUNICIPIO_COORDS = {
+    'Santo Domingo Este': { lat: 18.490, lng: -69.830 },
+    'Distrito Nacional': { lat: 18.475, lng: -69.910 },
+    'Santo Domingo Oeste': { lat: 18.510, lng: -69.950 },
+    'Santo Domingo Norte': { lat: 18.550, lng: -69.890 },
+    'Boca Chica': { lat: 18.450, lng: -69.610 },
+    'San Antonio de Guerra': { lat: 18.560, lng: -69.700 },
+    'La Victoria': { lat: 18.570, lng: -69.870 },
+    'La Caleta': { lat: 18.455, lng: -69.680 },
+    'Los Alcarrizos': { lat: 18.520, lng: -69.970 },
+    'Pedro Brand': { lat: 18.570, lng: -70.000 },
+    'San Cristóbal': { lat: 18.410, lng: -70.110 },
+    'Bajos de Haina': { lat: 18.500, lng: -70.050 },
+    'San Gregorio de Nigua': { lat: 18.480, lng: -70.080 },
+    'Villa Altagracia': { lat: 18.590, lng: -70.180 },
+    'Yaguate': { lat: 18.400, lng: -70.180 },
+    'Cambita Garabitos': { lat: 18.450, lng: -70.200 },
+    'Sabana Grande de Palenque': { lat: 18.420, lng: -70.160 },
+    'Los Cacaos': { lat: 18.430, lng: -70.260 },
+};
+
+// Sectores con coordenadas precisas (los más comunes)
+const PRECISE_SECTORS = [
+    { name: 'Plaza Quiñónez', municipio: 'Santo Domingo Este', lat: 18.4962, lng: -69.8498 },
+    { name: 'Urb. Lucerna', municipio: 'Santo Domingo Este', lat: 18.4930, lng: -69.8430 },
+    { name: 'Los Mameyes', municipio: 'Santo Domingo Este', lat: 18.4960, lng: -69.8350 },
+    { name: 'Los Mina (centro)', municipio: 'Santo Domingo Este', lat: 18.4880, lng: -69.8130 },
+    { name: 'Los Mina Norte', municipio: 'Santo Domingo Este', lat: 18.4950, lng: -69.8080 },
+    { name: 'Cancino Adentro', municipio: 'Santo Domingo Este', lat: 18.5080, lng: -69.8400 },
+    { name: 'La Barquita', municipio: 'Santo Domingo Este', lat: 18.5080, lng: -69.8560 },
+    { name: 'Los Tres Brazos', municipio: 'Santo Domingo Este', lat: 18.5000, lng: -69.8690 },
+    { name: 'Invivienda', municipio: 'Santo Domingo Este', lat: 18.5050, lng: -69.8180 },
+    { name: 'Alma Rosa I', municipio: 'Santo Domingo Este', lat: 18.4950, lng: -69.8300 },
+    { name: 'Alma Rosa II', municipio: 'Santo Domingo Este', lat: 18.4920, lng: -69.8220 },
+    { name: 'Cancino Afuera', municipio: 'Santo Domingo Este', lat: 18.5300, lng: -69.8300 },
+    { name: 'Los Frailes I', municipio: 'Santo Domingo Este', lat: 18.5160, lng: -69.8050 },
+    { name: 'Los Frailes II', municipio: 'Santo Domingo Este', lat: 18.5100, lng: -69.7900 },
+    { name: 'El Almirante', municipio: 'Santo Domingo Este', lat: 18.5500, lng: -69.8070 },
+    { name: 'Av. San Isidro / Las Américas', municipio: 'Santo Domingo Este', lat: 18.5200, lng: -69.7850 },
+    { name: 'San Isidro (entrada)', municipio: 'Santo Domingo Este', lat: 18.5300, lng: -69.7700 },
+    { name: 'San Isidro (interior)', municipio: 'Santo Domingo Este', lat: 18.5400, lng: -69.7550 },
+    { name: 'Ensanche Ozama', municipio: 'Distrito Nacional', lat: 18.4850, lng: -69.8700 },
+    { name: 'Los Mínimos', municipio: 'Distrito Nacional', lat: 18.4780, lng: -69.8760 },
+    { name: 'Zona Colonial', municipio: 'Distrito Nacional', lat: 18.4730, lng: -69.8830 },
+    { name: 'Villa Consuelo', municipio: 'Distrito Nacional', lat: 18.4840, lng: -69.8950 },
+    { name: 'Villa Juana', municipio: 'Distrito Nacional', lat: 18.4780, lng: -69.9000 },
+    { name: 'Simón Bolívar', municipio: 'Distrito Nacional', lat: 18.4900, lng: -69.9000 },
+    { name: 'Los Restauradores', municipio: 'Distrito Nacional', lat: 18.4950, lng: -69.9050 },
+    { name: 'Cristo Rey', municipio: 'Distrito Nacional', lat: 18.5000, lng: -69.9100 },
+    { name: 'Gazcue', municipio: 'Distrito Nacional', lat: 18.4670, lng: -69.8950 },
+    { name: 'Ensanche La Fe', municipio: 'Distrito Nacional', lat: 18.4750, lng: -69.9100 },
+    { name: 'Los Prados', municipio: 'Distrito Nacional', lat: 18.4700, lng: -69.9200 },
+    { name: 'Ensanche Quisqueya', municipio: 'Distrito Nacional', lat: 18.4780, lng: -69.9150 },
+    { name: 'Naco', municipio: 'Distrito Nacional', lat: 18.4720, lng: -69.9270 },
+    { name: 'Piantini', municipio: 'Distrito Nacional', lat: 18.4670, lng: -69.9330 },
+    { name: 'Bella Vista (DN)', municipio: 'Distrito Nacional', lat: 18.4550, lng: -69.9300 },
+    { name: 'Villa Mella', municipio: 'Santo Domingo Norte', lat: 18.5530, lng: -69.8950 },
+    { name: 'Los Guaricanos', municipio: 'Santo Domingo Norte', lat: 18.5600, lng: -69.8800 },
+    { name: 'Herrera', municipio: 'Santo Domingo Oeste', lat: 18.5100, lng: -69.9500 },
+    { name: 'Engombe', municipio: 'Santo Domingo Oeste', lat: 18.5300, lng: -69.9600 },
+    { name: 'Manoguayabo', municipio: 'Santo Domingo Oeste', lat: 18.5450, lng: -69.9700 },
+    { name: 'Boca Chica (centro)', municipio: 'Boca Chica', lat: 18.4500, lng: -69.6100 },
+    { name: 'Andrés', municipio: 'Boca Chica', lat: 18.4600, lng: -69.6600 },
+    { name: 'Guerra', municipio: 'San Antonio de Guerra', lat: 18.5600, lng: -69.7000 },
+    { name: 'San Cristóbal (centro)', municipio: 'San Cristóbal', lat: 18.4100, lng: -70.1100 },
+    { name: 'Haina', municipio: 'Bajos de Haina', lat: 18.5000, lng: -70.0500 },
+    { name: 'Nigua', municipio: 'San Gregorio de Nigua', lat: 18.4800, lng: -70.0800 },
+    { name: 'Madre Vieja', municipio: 'San Cristóbal', lat: 18.4400, lng: -70.0900 },
+    { name: 'La Caleta', municipio: 'La Caleta', lat: 18.4550, lng: -69.6800 },
 ];
+
+// Construir lista completa de sectores desde el JSON + coordenadas precisas
+let SECTORS = [];
+let _divLoaded = false;
+
+async function loadDivisionTerritorial() {
+    if (_divLoaded) return;
+    try {
+        const res = await fetch('republica_dominicana_division_territorial.json');
+        const data = await res.json();
+
+        const all = [];
+
+        // Precise sectors siempre incluidos
+        const preciseNames = new Set(PRECISE_SECTORS.map(s => s.name.toLowerCase()));
+        PRECISE_SECTORS.forEach(s => all.push(s));
+
+        // Distrito Nacional — todos los sectores/barrios
+        const dn = data.santo_domingo_capital_detalle.distrito_nacional.sectores_y_barrios_conocidos;
+        Object.values(dn).flat().forEach(nombre => {
+            if (preciseNames.has(nombre.toLowerCase())) return;
+            all.push({ name: nombre, municipio: 'Distrito Nacional' });
+        });
+
+        // Provincia Santo Domingo — cada municipio y sus sectores
+        const psd = data.santo_domingo_capital_detalle.provincia_santo_domingo.municipios;
+        psd.forEach(m => {
+            if (m.sectores_conocidos) {
+                m.sectores_conocidos.forEach(nombre => {
+                    if (preciseNames.has(nombre.toLowerCase())) return;
+                    all.push({ name: nombre + ' (' + m.nombre + ')', municipio: m.nombre });
+                });
+            }
+        });
+
+        // San Cristóbal
+        const sc = data.san_cristobal_detalle.municipios;
+        sc.forEach(m => {
+            if (m.sectores_conocidos) {
+                m.sectores_conocidos.forEach(nombre => {
+                    if (preciseNames.has(nombre.toLowerCase())) return;
+                    all.push({ name: nombre + ' (' + m.nombre + ')', municipio: m.nombre });
+                });
+            }
+        });
+
+        // Asignar coordenadas (precisas si existen, sino centro del municipio)
+        SECTORS = all.map(s => {
+            if (s.lat && s.lng) return s; // ya tiene coordenadas precisas
+            const mc = MUNICIPIO_COORDS[s.municipio];
+            if (mc) return { ...s, lat: mc.lat, lng: mc.lng };
+            return s; // sin coordenadas (no debería pasar)
+        }).filter(s => s.lat && s.lng);
+
+        _divLoaded = true;
+        initShippingUI();
+    } catch (e) {
+        console.warn('Error cargando división territorial, usando sectores precargados:', e);
+        SECTORS = [...PRECISE_SECTORS];
+        _divLoaded = true;
+        initShippingUI();
+    }
+}
+
+function calcShippingCost(roadKm) {
+    if (roadKm < MIN_SHIPPING_KM) return MIN_SHIPPING_COST;
+    return Math.round(roadKm * SHIPPING_COST_PER_KM);
+}
 
 function calcSectorDistance(sector) {
     const dist = haversine(STORE_LOCATION.lat, STORE_LOCATION.lng, sector.lat, sector.lng);
-    const roadKm = Math.round(dist * 1.3 * 10) / 10; // Haversine × factor de carretera, 1 decimal
-    const cost = Math.round(roadKm * SHIPPING_COST_PER_KM);
+    const roadKm = Math.round(dist * 1.3 * 10) / 10;
+    const cost = calcShippingCost(roadKm);
     return { km: roadKm, cost };
 }
 
@@ -782,12 +865,15 @@ function renderSectorResults(container, input, sectors) {
         container.style.display = 'block';
         return;
     }
-    sectors.forEach(s => {
+    // Mostrar solo primeros 40 para no saturar
+    const show = sectors.slice(0, 40);
+    show.forEach(s => {
         const { km, cost } = calcSectorDistance(s);
+        const label = s.municipio ? `<span class="sector-municipio">${s.municipio}</span>` : '';
         const div = document.createElement('div');
         div.className = 'sector-item';
-        div.innerHTML = `<span class="sector-name">${s.name}</span>
-                         <span class="sector-distance">~${km} km</span>
+        div.innerHTML = `<span class="sector-name">${s.name} ${label}</span>
+                         <span class="sector-distance">${km < 3 ? '<3' : '~' + km} km</span>
                          <span class="sector-price">RD$ ${cost.toLocaleString()}</span>`;
         div.addEventListener('click', function() {
             selectSector(s, input);
@@ -795,6 +881,12 @@ function renderSectorResults(container, input, sectors) {
         });
         container.appendChild(div);
     });
+    if (sectors.length > 40) {
+        const more = document.createElement('div');
+        more.className = 'sector-no-results';
+        more.textContent = `+${sectors.length - 40} más — sigue escribiendo para filtrar`;
+        container.appendChild(more);
+    }
     container.style.display = 'block';
 }
 
@@ -805,13 +897,13 @@ function selectSector(sector, input) {
 
     const { km, cost } = calcSectorDistance(sector);
     shippingCost = cost;
-    const roadKm = km;
     input.value = sector.name;
     costDisplay.textContent = `RD$ ${shippingCost.toLocaleString()}`;
     btn.textContent = `${sector.name} ✓`;
     btn.disabled = false;
     calculateTotals();
-    showToast(`Envío: ${sector.name} → ${roadKm} km → RD$ ${shippingCost.toLocaleString()}`, 'success');
+    const kmLabel = km < 3 ? '(<3 km)' : `(${km} km)`;
+    showToast(`Envío: ${sector.name} → ${kmLabel} → RD$ ${shippingCost.toLocaleString()}`, 'success');
 }
 
 function shareLocation() {
@@ -855,7 +947,7 @@ async function calculateShipping(lat, lng, btn, costDisplay) {
 
         if (data.code === 'Ok' && data.routes?.[0]) {
             const distKm = Math.round(data.routes[0].distance / 1000);
-            shippingCost = Math.round(distKm * SHIPPING_COST_PER_KM);
+            shippingCost = distKm < MIN_SHIPPING_KM ? MIN_SHIPPING_COST : Math.round(distKm * SHIPPING_COST_PER_KM);
             costDisplay.textContent = `RD$ ${shippingCost.toLocaleString()}`;
             btn.textContent = `Ubicación obtenida ✓`;
             btn.disabled = false;
@@ -866,7 +958,7 @@ async function calculateShipping(lat, lng, btn, costDisplay) {
     } catch (e) {
         console.warn('OSRM falló, usando distancia lineal:', e);
         const dist = Math.round(haversine(lat, lng, STORE_LOCATION.lat, STORE_LOCATION.lng) * 1.3);
-        shippingCost = Math.round(dist * SHIPPING_COST_PER_KM);
+        shippingCost = dist < MIN_SHIPPING_KM ? MIN_SHIPPING_COST : Math.round(dist * SHIPPING_COST_PER_KM);
         costDisplay.textContent = `RD$ ${shippingCost.toLocaleString()}`;
         btn.textContent = 'Ubicación obtenida';
         btn.disabled = false;

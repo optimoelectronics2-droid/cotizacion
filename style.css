@@ -1101,6 +1101,14 @@ input:checked + .slider:before { transform: translateX(18px); }
   font-size: 13px;
   color: var(--text);
   font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sector-municipio {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 400;
 }
 .sector-distance {
   font-size: 11px;
