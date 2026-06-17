@@ -661,12 +661,19 @@ function toggleShipping() {
     
     if (!includeShipping) {
         shippingCost = 0;
+        _locationFound = false;
         document.getElementById('shippingCostDisplay').textContent = 'RD$ 0.00';
         document.getElementById('locationButtonText').textContent = 'Compartir Ubicación';
+        document.getElementById('locationButtonText').disabled = false;
+    } else {
+        // Re-detect location when re-enabled
+        setTimeout(autoDetectLocation, 300);
     }
     
     calculateTotals();
 }
+
+let _locationFound = false;
 
 function autoDetectLocation() {
     const btn = document.getElementById('locationButtonText');
@@ -674,73 +681,53 @@ function autoDetectLocation() {
     const shippingEnabled = document.getElementById('includeShipping')?.checked;
     if (!btn || !costDisplay || !shippingEnabled) return;
 
-    btn.textContent = 'Detectando ubicación...';
+    btn.textContent = 'Obteniendo ubicación GPS...';
     btn.disabled = true;
-
-    // First try instant IP geolocation (no permission needed)
-    fetch('https://ipapi.co/json/')
-        .then(r => r.json())
-        .then(data => {
-            if (data.latitude && data.longitude) {
-                btn.textContent = 'Ubicación por IP, calculando...';
-                calculateShipping(data.latitude, data.longitude, btn, costDisplay);
-            }
-        })
-        .catch(() => {});
-
-    // Then try GPS (more accurate, needs permission)
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                btn.textContent = 'GPS preciso, calculando...';
-                calculateShipping(position.coords.latitude, position.coords.longitude, btn, costDisplay);
-            },
-            (error) => {
-                console.warn('GPS no disponible, usando IP:', error.message);
-                // IP fallback already running above
-            },
-            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-        );
-    }
-}
-
-function shareLocation() {
-    const btn = document.getElementById('locationButtonText');
-    const costDisplay = document.getElementById('shippingCostDisplay');
+    _locationFound = false;
 
     if (!navigator.geolocation) {
+        btn.textContent = 'GPS no disponible';
+        btn.disabled = false;
         showManualShippingSelector();
         return;
     }
 
-    btn.textContent = 'Obteniendo ubicación...';
-    btn.disabled = true;
-
+    // Try GPS with high accuracy, no cache
     navigator.geolocation.getCurrentPosition(
         (position) => {
-            btn.textContent = 'Calculando distancia...';
+            if (_locationFound) return;
+            _locationFound = true;
+            btn.textContent = 'Ubicación exacta obtenida';
             calculateShipping(position.coords.latitude, position.coords.longitude, btn, costDisplay);
         },
         (error) => {
-            console.error('Error GPS:', error);
-            // Try IP as fallback
-            fetch('https://ipapi.co/json/')
-                .then(r => r.json())
-                .then(data => {
-                    if (data.latitude && data.longitude) {
-                        calculateShipping(data.latitude, data.longitude, btn, costDisplay);
-                    } else {
-                        throw new Error('No IP data');
-                    }
-                })
-                .catch(() => {
-                    btn.textContent = 'Usar ubicación manual';
+            if (_locationFound) return;
+            console.warn('GPS error:', error.message);
+            // Retry once with lower accuracy but longer timeout
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    if (_locationFound) return;
+                    _locationFound = true;
+                    btn.textContent = 'Ubicación obtenida';
+                    calculateShipping(position.coords.latitude, position.coords.longitude, btn, costDisplay);
+                },
+                (error2) => {
+                    if (_locationFound) return;
+                    console.warn('GPS retry failed:', error2.message);
+                    btn.textContent = 'Compartir ubicación manualmente';
                     btn.disabled = false;
                     showManualShippingSelector();
-                });
+                },
+                { enableHighAccuracy: false, timeout: 15000, maximumAge: 0 }
+            );
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
     );
+}
+
+function shareLocation() {
+    if (_locationFound) return;
+    autoDetectLocation();
 }
 
 // Zonas de envío para República Dominicana (RD$)
