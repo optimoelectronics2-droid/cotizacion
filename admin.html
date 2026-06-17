@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trifusion Technologies — Catálogo Profesional</title>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* ============ CATALOG HEADER ============ */
+        .catalog-header {
+            background: rgba(10, 14, 23, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .catalog-header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .catalog-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .catalog-logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 17px;
+            box-shadow: 0 0 20px rgba(0, 149, 255, 0.2);
+        }
+        .catalog-logo h1 {
+            font-size: 18px;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.03em;
+        }
+
+        .catalog-contact {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .catalog-contact span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .catalog-contact i { font-size: 14px; }
+
+        /* ============ CATEGORIES ============ */
+        .catalog-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        .catalog-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .catalog-section-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .category-card {
+            position: relative;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            opacity: 0.6;
+        }
+        .category-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md), 0 0 24px rgba(0, 149, 255, 0.08);
+        }
+        .category-card .category-icon {
+            font-size: 32px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+        .category-card:hover .category-icon { transform: scale(1.1); }
+        .category-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .category-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        .category-card .btn {
+            padding: 7px 14px;
+            font-size: 12px;
+        }
+
+        /* ============ PRODUCTS ============ */
+        .products-toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .products-toolbar .search-bar {
+            position: relative;
+            flex: 1;
+            max-width: 320px;
+        }
+        .products-toolbar .search-bar input {
+            width: 100%;
+            padding: 9px 12px 9px 36px;
+            border-radius: var(--radius);
+            border: 1.5px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text);
+            font-size: 13px;
+            outline: none;
+            transition: var(--transition);
+        }
+        .products-toolbar .search-bar input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-subtle);
+        }
+        .products-toolbar .search-bar i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .product-card {
+            position: relative;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            z-index: 1;
+        }
+        .product-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg), 0 0 30px rgba(0, 149, 255, 0.08);
+        }
+
+        .product-image {
+            height: 180px;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+        .product-card:hover .product-image img { transform: scale(1.05); }
+
+        .product-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            background: var(--gradient-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        .product-badge[style*="success"] { background: var(--gradient-success) !important; }
+        .product-badge[style*="secondary"] { background: var(--gradient-primary) !important; }
+
+        .product-info {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .product-description {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            flex: 1;
+        }
+        .product-price {
+            font-size: 22px;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+        .product-price.transit {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--warning);
+            background: none;
+            -webkit-text-fill-color: var(--warning);
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .product-actions .btn { flex: 1; padding: 8px; font-size: 12px; }
+
+        .btn-whatsapp-catalog {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+        }
+        .btn-whatsapp-catalog:hover {
+            background: linear-gradient(135deg, #2be477, #14a085);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        /* ============ ADMIN PANEL ============ */
+        .admin-panel-section {
+            position: relative;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            margin: 24px auto;
+            max-width: 1300px;
+            border: 1px solid var(--border);
+            display: none;
+            overflow: hidden;
+        }
+        .admin-panel-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+        }
+        .admin-panel-section.active { display: block; animation: slideUp 0.3s ease; }
+
+        .admin-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .admin-panel-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .admin-panel-header h2 i { color: var(--primary); }
+
+        .admin-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+            padding: 4px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+        .admin-tab {
+            flex: 1;
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .admin-tab:hover { color: var(--text-secondary); }
+        .admin-tab.active {
+            background: var(--bg-card);
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm), inset 0 0 0 1px rgba(0, 149, 255, 0.1);
+        }
+
+        .admin-content { display: none; }
+        .admin-content.active { display: block; animation: slideUp 0.25s ease; }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            font-weight: 500;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideUp 0.25s ease;
+        }
+        .message.success { background: var(--success-bg); color: var(--success); border-left: 3px solid var(--success); }
+        .message.error { background: var(--danger-bg); color: var(--danger); border-left: 3px solid var(--danger); }
+        .message.info { background: var(--primary-subtle); color: var(--primary); border-left: 3px solid var(--primary); }
+
+        .loading {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-muted);
+        }
+
+        .whatsapp-float {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 54px;
+            height: 54px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+            z-index: 100;
+            transition: var(--transition);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .whatsapp-float:hover { transform: scale(1.05); }
+        .whatsapp-float:active { transform: scale(0.92); }
+
+        .product-image-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        #shippingZoneSelect {
+            width: 100%;
+            padding: 10px;
+            border-radius: var(--radius);
+            border: 1.5px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text);
+            font-size: 14px;
+            margin-bottom: 8px;
+            outline: none;
+        }
+        #shippingZoneSelect:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-subtle);
+        }
+
+        @media (max-width: 640px) {
+            .catalog-header { padding: 10px 14px; }
+            .catalog-header-inner { flex-wrap: wrap; gap: 8px; }
+            .catalog-logo h1 { font-size: 15px; }
+            .catalog-logo-icon { width: 32px; height: 32px; font-size: 14px; }
+            .catalog-contact { gap: 12px; font-size: 12px; }
+            .catalog-contact span:last-child { display: none; }
+            .catalog-section { padding: 16px 14px; }
+            .catalog-section-header { flex-wrap: wrap; gap: 10px; }
+            .catalog-section-header h2 { font-size: 18px; }
+            .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .category-card { padding: 16px 12px; }
+            .category-card .category-icon { font-size: 24px; }
+            .category-card h3 { font-size: 13px; }
+            .products-grid { grid-template-columns: 1fr; gap: 12px; }
+            .products-toolbar { flex-direction: column; }
+            .products-toolbar .search-bar { max-width: 100%; }
+            .product-image { height: 160px; }
+            .admin-panel-section { padding: 16px; margin: 16px 10px; border-radius: var(--radius-lg); }
+            .admin-panel-header { flex-wrap: wrap; gap: 10px; }
+            .admin-panel-header h2 { font-size: 17px; }
+            .whatsapp-float { width: 48px; height: 48px; font-size: 20px; bottom: 16px; right: 16px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .product-image-thumb { width: 48px; height: 48px; }
+        }
+
+        @media (max-width: 374px) {
+            .categories-grid { grid-template-columns: 1fr; }
+            .catalog-contact span:first-child { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== HEADER ========== -->
+    <header class="catalog-header">
+        <div class="catalog-header-inner">
+            <div class="catalog-logo">
+                <div class="catalog-logo-icon">
+                    <svg viewBox="0 0 100 100" width="20" height="20" fill="white">
+                        <path d="M50 15 L75 40 L50 65 L25 40 Z" fill="white"/>
+                        <text x="50" y="52" font-family="Arial" font-size="22" fill="white" text-anchor="middle" font-weight="bold">TE</text>
+                    </svg>
+                </div>
+                <h1>Trifusion Technologies</h1>
+            </div>
+            <div class="catalog-contact">
+                <span><i class="fas fa-map-marker-alt"></i> Autopista de San Isidro, Santo Domingo, RD</span>
+                <span><i class="fab fa-whatsapp"></i> +1 (829) 872-5163</span>
+                <button class="btn btn-secondary" id="adminAccessBtn" style="padding:6px 12px;font-size:12px;">
+                    <i class="fas fa-user-cog"></i> Admin
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========== LOGIN MODAL ========== -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-shield"></i> Acceso Administrador</h2>
+                <button class="modal-close" onclick="document.getElementById('loginModal').classList.remove('active')">&times;</button>
+            </div>
+            <form id="loginForm" autocomplete="on" style="padding:0;">
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                    <input type="email" id="email" name="email" placeholder="admin@trifusion.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <div id="loginMessage"></div>
+                <button type="submit" class="btn btn-primary" style="width:100%;padding:11px;">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== ADMIN PANEL ========== -->
+    <div class="admin-panel-section" id="adminPanel">
+        <div class="admin-panel-header">
+            <h2><i class="fas fa-tools"></i> Panel de Administración</h2>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <span id="adminEmail" style="color:var(--text-muted);font-size:13px;"></span>
+                <button class="btn btn-danger" id="logoutBtn" style="padding:6px 12px;font-size:12px;">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="products"><i class="fas fa-box"></i> Productos</button>
+            <button class="admin-tab" data-tab="inventory"><i class="fas fa-clipboard-list"></i> Inventario</button>
+        </div>
+
+        <div id="adminMessage"></div>
+
+        <!-- Products Tab -->
+        <div class="admin-content active" id="tab-products">
+            <h3 style="margin-bottom:20px;color:var(--text);font-size:16px;display:flex;align-items:center;gap:8px;">
+                <i class="fas fa-plus-circle" style="color:var(--primary);"></i> Agregar Producto
+            </h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="productName"><i class="fas fa-tag"></i> Nombre del Producto *</label>
+                    <input type="text" id="productName" placeholder="Ej: iPhone 14 Pro 128GB" required>
+                </div>
+                <div class="form-group">
+                    <label for="productCategory"><i class="fas fa-folder"></i> Categoría *</label>
+                    <select id="productCategory" required>
+                        <option value="telefonos">Teléfonos</option>
+                        <option value="monitores">Monitores</option>
+                        <option value="impresoras">Impresoras</option>
+                        <option value="ups">UPS</option>
+                        <option value="accesorios">Accesorios</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice"><i class="fas fa-dollar-sign"></i> Precio Base (RD$) *</label>
+                    <input type="number" id="productPrice" placeholder="0.00" min="0" step="0.01" required>
+                    <small style="color:var(--text-muted);display:block;margin-top:4px;font-size:11px;">Teléfonos: +20%, otros: +15%</small>
+                </div>
+                <div class="form-group">
+                    <label for="productImageUpload"><i class="fas fa-image"></i> Imagen</label>
+                    <input type="file" id="productImageUpload" accept="image/*">
+                    <small style="color:var(--text-muted);display:block;margin-top:4px;font-size:11px;">Máx. 5MB (JPEG, PNG, WebP)</small>
+                </div>
+                <div class="form-group">
+                    <label for="productImageUrl"><i class="fas fa-link"></i> URL de Imagen</label>
+                    <input type="url" id="productImageUrl" placeholder="https://ejemplo.com/imagen.jpg">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom:16px;">
+                <label for="productDescription"><i class="fas fa-info-circle"></i> Descripción</label>
+                <textarea id="productDescription" placeholder="Descripción detallada del producto..."></textarea>
+            </div>
+            <button class="btn btn-primary" id="saveProductBtn" style="width:100%;padding:12px;font-size:14px;">
+                <i class="fas fa-save"></i> Guardar Producto
+            </button>
+        </div>
+
+        <!-- Inventory Tab -->
+        <div class="admin-content" id="tab-inventory">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+                <h3 style="color:var(--text);font-size:16px;display:flex;align-items:center;gap:8px;">
+                    <i class="fas fa-warehouse" style="color:var(--primary);"></i> Gestión de Inventario
+                </h3>
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <div class="search-bar" style="position:relative;width:220px;">
+                        <i class="fas fa-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px;"></i>
+                        <input type="text" id="inventorySearch" placeholder="Buscar..." style="width:100%;padding:8px 10px 8px 32px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--bg-input);color:var(--text);font-size:13px;outline:none;">
+                    </div>
+                    <button class="btn btn-secondary" id="refreshInventoryBtn" style="padding:7px 12px;font-size:12px;">
+                        <i class="fas fa-sync"></i> Actualizar
+                    </button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Precio Base</th>
+                            <th>Precio Final</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody">
+                        <tr><td colspan="6" style="text-align:center;padding:36px;"><div class="spinner"></div><p style="margin-top:8px;color:var(--text-muted);font-size:13px;">Cargando inventario...</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== CATEGORIES ========== -->
+    <section class="catalog-section">
+        <div class="catalog-section-header">
+            <h2><i class="fas fa-th-large" style="color:var(--primary);"></i> Nuestras Categorías</h2>
+        </div>
+        <div id="categoriesLoading" class="loading" style="display:block;">
+            <div class="spinner"></div>
+            <p style="margin-top:8px;">Cargando categorías...</p>
+        </div>
+        <div id="categoriesGrid" class="categories-grid"></div>
+    </section>
+
+    <!-- ========== PRODUCTS ========== -->
+    <section class="catalog-section" style="padding-top:0;">
+        <div class="catalog-section-header">
+            <h2 id="productsTitle"><i class="fas fa-box-open" style="color:var(--primary);"></i> Todos los Productos</h2>
+            <div class="products-toolbar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchProducts" placeholder="Buscar productos...">
+                </div>
+                <button class="btn btn-secondary" id="refreshProductsBtn" style="padding:7px 12px;font-size:12px;">
+                    <i class="fas fa-sync"></i> Actualizar
+                </button>
+            </div>
+        </div>
+        <div id="productsLoading" class="loading" style="display:block;">
+            <div class="spinner"></div>
+            <p style="margin-top:8px;">Cargando productos...</p>
+        </div>
+        <div id="productsEmpty" class="empty-state" style="display:none;">
+            <i class="fas fa-inbox"></i>
+            <h3 style="margin-bottom:6px;font-size:18px;color:var(--text);">No hay productos disponibles</h3>
+            <p style="font-size:13px;">Prueba con otra búsqueda o categoría</p>
+        </div>
+        <div id="productsGrid" class="products-grid"></div>
+    </section>
+
+    <!-- ========== WHATSAPP FAB ========== -->
+    <a href="https://wa.me/18298725163" class="whatsapp-float" target="_blank" aria-label="WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDlOJqBgd-8KqUT-Y94lsma5W8T79PsPjM",
+            authDomain: "trifusion-cotizador.firebaseapp.com",
+            projectId: "trifusion-cotizador",
+            storageBucket: "trifusion-cotizador.firebasestorage.app",
+            messagingSenderId: "407374211882",
+            appId: "1:407374211882:web:b692792ccc39c8d48f4c53"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+
+        const state = {
+            currentUser: null,
+            currentCategory: 'all',
+            currentSearch: '',
+            allProducts: [],
+            editingProductId: null,
+            categories: [
+                { id: 'telefonos', name: 'Teléfonos', icon: 'mobile-alt', sheetId: '1EtOwxNRGq0WFgGaRXtJgibUqzxIgcAUeRkJlr1wPsLc', margin: 20 },
+                { id: 'monitores', name: 'Monitores', icon: 'desktop', sheetId: '1dJ6IGB75oVPaWcWrQjzwjrCeZEmXwlw7', margin: 15 },
+                { id: 'impresoras', name: 'Impresoras', icon: 'print', sheetId: '1rl15lecq23hYfE9z0Q-Vyi7kOR8CI9dl', margin: 15 },
+                { id: 'ups', name: 'UPS', icon: 'battery-full', sheetId: '1bnyTbEHd170zPEDs9UexYEvLylR5h4n7', margin: 15 },
+                { id: 'accesorios', name: 'Accesorios', icon: 'plug', sheetId: null, margin: 15 }
+            ]
+        };
+
+        auth.onAuthStateChanged(user => {
+            state.currentUser = user;
+            if (user) {
+                document.getElementById('loginModal').classList.remove('active');
+                document.getElementById('adminPanel').classList.add('active');
+                document.getElementById('adminEmail').textContent = user.email;
+                loadInventory();
+            } else {
+                document.getElementById('adminPanel').classList.remove('active');
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('loginMessage');
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                messageDiv.innerHTML = '';
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="message error"><i class="fas fa-exclamation-circle"></i> ${error.message}</div>`;
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                showMessage('adminMessage', 'Sesión cerrada correctamente', 'info');
+            } catch (error) { console.error(error); }
+        });
+
+        document.getElementById('adminAccessBtn').addEventListener('click', () => {
+            if (state.currentUser) {
+                document.getElementById('adminPanel').classList.add('active');
+            } else {
+                document.getElementById('loginModal').classList.add('active');
+            }
+        });
+
+        // Admin tabs
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+            });
+        });
+
+        function showMessage(containerId, text, type) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            el.innerHTML = `<div class="message ${type}"><i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${text}</div>`;
+            setTimeout(() => el.innerHTML = '', 4000);
+        }
+
+        // Categories
+        function displayCategories() {
+            const grid = document.getElementById('categoriesGrid');
+            const loading = document.getElementById('categoriesLoading');
+            loading.style.display = 'none';
+            grid.innerHTML = state.categories.map(cat => `
+                <div class="category-card" onclick="filterByCategory('${cat.id}')">
+                    <div class="category-icon"><i class="fas fa-${cat.icon}"></i></div>
+                    <h3>${cat.name}</h3>
+                    <p>${cat.sheetId ? 'Sincronizado con Google Sheets' : 'Productos manuales'}</p>
+                    <button class="btn btn-primary"><i class="fas fa-eye"></i> Ver</button>
+                </div>
+            `).join('');
+        }
+
+        displayCategories();
+
+        // Products
+        async function loadProducts() {
+            try {
+                document.getElementById('productsLoading').style.display = 'block';
+                document.getElementById('productsEmpty').style.display = 'none';
+                const sheetProducts = await loadProductsFromSheets();
+                const firebaseProducts = await loadFirebaseProducts();
+                state.allProducts = [...sheetProducts, ...firebaseProducts];
+                filterAndDisplayProducts();
+            } catch (error) {
+                console.error('Error cargando productos:', error);
+                document.getElementById('productsLoading').style.display = 'none';
+                document.getElementById('productsGrid').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3 style="margin-bottom:6px;font-size:18px;color:var(--text);">Error al cargar productos</h3><p style="font-size:13px;">Por favor, intenta nuevamente</p></div>';
+            }
+        }
+
+        async function loadProductsFromSheets() {
+            const products = [];
+            for (const category of state.categories) {
+                if (!category.sheetId) continue;
+                try {
+                    const csvUrl = `https://docs.google.com/spreadsheets/d/${category.sheetId}/gviz/tq?tqx=out:csv`;
+                    const response = await fetch(csvUrl);
+                    const csv = await response.text();
+                    const parsed = await new Promise((resolve) => Papa.parse(csv, { header: false, skipEmptyLines: true, complete: resolve }));
+                    parsed.data.forEach(row => {
+                        const description = (row[2] || "").trim();
+                        const priceRaw = (row[3] || "").trim();
+                        if (!description || !priceRaw) return;
+                        let isTransit = false, basePrice = null;
+                        if (priceRaw.toUpperCase().includes("TRANSITO")) { isTransit = true; }
+                        else { const n = priceRaw.replace(/[^0-9.]/g, ""); basePrice = parseFloat(n) || null; }
+                        if (basePrice || isTransit) {
+                            let hash = 0;
+                            for (let i = 0; i < description.length; i++) { hash = ((hash << 5) - hash) + description.charCodeAt(i); hash = hash & hash; }
+                            products.push({ id: 'sheet_' + category.id + '_' + Math.abs(hash), name: description, description, categoryId: category.id, categoryName: category.name, basePrice, margin: category.margin, isTransit, imageUrl: '', source: 'google_sheet' });
+                        }
+                    });
+                } catch (error) { console.error('Error Sheets ' + category.name + ':', error); }
+            }
+            return products;
+        }
+
+        async function loadFirebaseProducts() {
+            try {
+                const snapshot = await db.collection('products').where('visible', '==', true).get();
+                const products = [];
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    products.push({ id: doc.id, name: d.name, description: d.description || '', categoryId: d.categoryId || 'telefonos', categoryName: d.categoryName || 'Teléfonos', basePrice: d.basePrice || d.price, margin: d.categoryId === 'telefonos' ? 20 : 15, imageUrl: d.imageUrl || '', source: 'firebase', isTransit: false });
+                });
+                return products;
+            } catch (error) { console.error(error); return []; }
+        }
+
+        function calculateFinalPrice(p) {
+            if (p.isTransit) return 'TRÁNSITO';
+            if (p.basePrice) return p.basePrice * (1 + p.margin / 100);
+            return null;
+        }
+
+        function formatPrice(amount) {
+            if (amount === null || amount === undefined) return 'SIN PRECIO';
+            return "$" + amount.toLocaleString("es-DO", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function filterAndDisplayProducts() {
+            document.getElementById('productsLoading').style.display = 'none';
+            let f = [...state.allProducts];
+            if (state.currentCategory !== 'all') f = f.filter(p => p.categoryId === state.currentCategory);
+            if (state.currentSearch.trim()) { const s = state.currentSearch.toLowerCase(); f = f.filter(p => p.name.toLowerCase().includes(s) || (p.description && p.description.toLowerCase().includes(s))); }
+            document.getElementById('productsEmpty').style.display = f.length === 0 ? 'block' : 'none';
+            displayProducts(f);
+        }
+
+        function displayProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+            if (products.length === 0) { document.getElementById('productsEmpty').style.display = 'block'; return; }
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                const finalPrice = calculateFinalPrice(product);
+                const pc = product.isTransit ? 'transit' : '';
+                const imgHtml = product.imageUrl ? `<img src="${product.imageUrl}" alt="${product.name}">` : '<div style="font-size:36px;color:var(--text-muted);"><i class="fas fa-box"></i></div>';
+                const badge = product.isTransit ? '<div class="product-badge">Tránsito</div>' : product.source === 'google_sheet' ? '<div class="product-badge" style="background:var(--success);">Sheet</div>' : '<div class="product-badge" style="background:var(--secondary);">Local</div>';
+                card.innerHTML = `
+                    <div class="product-image">${imgHtml}${badge}</div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-description">${product.description || 'Sin descripción'}</div>
+                        <div class="product-price ${pc}">${formatPrice(finalPrice)}</div>
+                        <div class="product-actions">
+                            <button class="btn btn-whatsapp-catalog" onclick="openWhatsApp('${product.name}')"><i class="fab fa-whatsapp"></i> Cotizar</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterByCategory(categoryId) {
+            state.currentCategory = categoryId;
+            document.getElementById('productsTitle').innerHTML = '<i class="fas fa-filter" style="color:var(--primary);"></i> Productos — ' + (state.categories.find(c => c.id === categoryId)?.name || 'Todos');
+            filterAndDisplayProducts();
+        }
+
+        document.getElementById('searchProducts').addEventListener('input', function() {
+            state.currentSearch = this.value;
+            filterAndDisplayProducts();
+        });
+
+        document.getElementById('refreshProductsBtn').addEventListener('click', loadProducts);
+
+        function openWhatsApp(productName) {
+            window.open('https://wa.me/18298725163?text=' + encodeURIComponent('Hola, me interesa el producto: ' + productName), '_blank');
+        }
+
+        async function saveProduct() {
+            const name = document.getElementById('productName').value.trim();
+            const categoryId = document.getElementById('productCategory').value;
+            const basePrice = parseFloat(document.getElementById('productPrice').value);
+            const description = document.getElementById('productDescription').value.trim();
+            const imageFile = document.getElementById('productImageUpload').files[0];
+            const imageUrlInput = document.getElementById('productImageUrl').value.trim();
+            const category = state.categories.find(c => c.id === categoryId);
+            if (!name || isNaN(basePrice)) { showMessage('adminMessage', 'Completa todos los campos obligatorios', 'error'); return; }
+            let imageUrl = '';
+            if (imageFile) {
+                try {
+                    if (imageFile.size > 5 * 1024 * 1024) throw new Error('Archivo muy grande (máx. 5MB)');
+                    if (!['image/jpeg', 'image/png', 'image/webp'].includes(imageFile.type)) throw new Error('Solo JPEG, PNG, WebP');
+                    showMessage('adminMessage', 'Subiendo imagen...', 'info');
+                    const ref = storage.ref('products/' + Date.now() + '_' + imageFile.name);
+                    await ref.put(imageFile);
+                    imageUrl = await ref.getDownloadURL();
+                } catch (e) { showMessage('adminMessage', e.message, 'error'); return; }
+            } else if (imageUrlInput) { imageUrl = imageUrlInput; }
+            try {
+                await db.collection('products').add({ name, description, categoryId, categoryName: category.name, basePrice, imageUrl, visible: true, margin: category.margin, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                showMessage('adminMessage', 'Producto agregado exitosamente', 'success');
+                document.getElementById('productName').value = '';
+                document.getElementById('productCategory').value = 'telefonos';
+                document.getElementById('productPrice').value = '';
+                document.getElementById('productDescription').value = '';
+                document.getElementById('productImageUpload').value = '';
+                document.getElementById('productImageUrl').value = '';
+                await loadProducts();
+                await loadInventory();
+            } catch (e) { showMessage('adminMessage', 'Error al guardar', 'error'); }
+        }
+
+        document.getElementById('saveProductBtn').addEventListener('click', saveProduct);
+
+        async function loadInventory() {
+            const tbody = document.getElementById('inventoryTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:36px;"><div class="spinner"></div><p style="margin-top:8px;color:var(--text-muted);font-size:13px;">Cargando...</p></td></tr>';
+            try {
+                const snapshot = await db.collection('products').orderBy('createdAt', 'desc').get();
+                if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">No hay productos en el inventario</td></tr>'; return; }
+                let html = '';
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    const cat = state.categories.find(c => c.id === d.categoryId) || state.categories[0];
+                    const finalPrice = d.basePrice ? d.basePrice * (1 + (cat?.margin || 15) / 100) : '—';
+                    html += `<tr>
+                        <td style="font-size:11px;color:var(--text-muted);font-family:monospace;">${doc.id.slice(0, 8)}...</td>
+                        <td><div style="display:flex;align-items:center;gap:10px;">${d.imageUrl ? `<img src="${d.imageUrl}" class="product-image-thumb" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">` : ''}<strong>${d.name}</strong></div></td>
+                        <td>${d.categoryName || '—'}</td>
+                        <td>RD$ ${(d.basePrice || 0).toLocaleString()}</td>
+                        <td><strong>${typeof finalPrice === 'number' ? 'RD$ ' + finalPrice.toLocaleString() : '—'}</strong></td>
+                        <td><button class="btn btn-danger" style="padding:4px 10px;font-size:11px;" onclick="deleteInventoryItem('${doc.id}')"><i class="fas fa-trash"></i></button></td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            } catch (error) { console.error(error); tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--danger);font-size:13px;">Error al cargar inventario</td></tr>'; }
+        }
+
+        async function deleteInventoryItem(id) {
+            if (!await showConfirm('Eliminar producto', '¿Eliminar este producto del inventario?')) return;
+            try { await db.collection('products').doc(id).delete(); showMessage('adminMessage', 'Producto eliminado', 'success'); await loadProducts(); await loadInventory(); }
+            catch (e) { showMessage('adminMessage', 'Error al eliminar', 'error'); }
+        }
+
+        document.getElementById('refreshInventoryBtn').addEventListener('click', loadInventory);
+        document.getElementById('inventorySearch').addEventListener('input', function() {
+            const q = this.value.toLowerCase();
+            document.querySelectorAll('#inventoryTableBody tr').forEach(r => { r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+        });
+
+        loadProducts();
+    </script>
+</body>
+</html>
