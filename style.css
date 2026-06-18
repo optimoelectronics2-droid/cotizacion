@@ -653,6 +653,11 @@ body::after {
   resize: vertical;
 }
 
+.form-group.full-width,
+.admin-product-search-group {
+  grid-column: 1 / -1;
+}
+
 .form-group select {
   cursor: pointer;
   appearance: none;
@@ -712,6 +717,117 @@ body::after {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-subtle);
   width: 220px;
+}
+
+.smart-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.smart-search > i {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  font-size: 13px;
+  pointer-events: none;
+}
+.smart-search input {
+  padding-left: 36px;
+  padding-right: 40px;
+}
+.smart-search-clear {
+  position: absolute;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: var(--transition);
+}
+.smart-search-clear:hover {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+.smart-search-results {
+  display: none;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  max-height: 280px;
+  overflow-y: auto;
+}
+.smart-search-results.active {
+  display: block;
+}
+.smart-search-option {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--text);
+  padding: 11px 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.smart-search-option:last-child { border-bottom: 0; }
+.smart-search-option:hover {
+  background: rgba(0, 149, 255, 0.08);
+}
+.smart-search-option strong {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+.smart-search-option small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.smart-search-option em {
+  color: var(--primary);
+  font-style: normal;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.smart-search-empty {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 14px;
+}
+
+.inventory-price-input {
+  width: 118px;
+  max-width: 100%;
+  padding: 7px 9px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text);
+  font: inherit;
+  text-align: right;
+  outline: none;
+}
+.inventory-price-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-subtle);
+}
+.inventory-action-btn {
+  padding: 6px 12px;
+  font-size: 14px;
+  margin-right: 6px;
 }
 
 /* ============ TABLES ============ */

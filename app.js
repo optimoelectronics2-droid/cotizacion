@@ -12,6 +12,7 @@ let shippingCost = 0;
 let includeShipping = true;
 let activeTab = 'facturacion';
 let cotizacionCounter = parseInt(localStorage.getItem('cotizacionCounter') || '0');
+let selectedAdminProductId = '';
 
 // Device Detection
 const device = {
@@ -196,7 +197,7 @@ function updateUI() {
     if (currentUser && dashboard) {
         dashboard.style.display = 'block';
         loadRecentQuotes();
-        populateAdminProductSelect();
+        clearAdminProductSearch();
     } else if (dashboard) {
         dashboard.style.display = 'none';
     }
@@ -299,7 +300,7 @@ async function loadProducts() {
         
         renderProductsTable();
         populateProductModal();
-        populateAdminProductSelect();
+        clearAdminProductSearch();
         
     } catch (error) {
         console.error('Error cargando productos:', error);
@@ -361,6 +362,9 @@ async function deleteProduct(id) {
 function renderProductsTable() {
     const tbody = document.getElementById('productsTable');
     if (!tbody) return;
+
+    const searchInput = document.getElementById('searchInventory');
+    const searchTerm = normalizeSearchText(searchInput?.value || '');
     
     if (products.length === 0) {
         tbody.innerHTML = `
@@ -370,13 +374,38 @@ function renderProductsTable() {
         `;
         return;
     }
+
+    if (searchTerm.length < 2) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center">Busca por nombre, código o categoría para ver productos del inventario</td>
+            </tr>
+        `;
+        return;
+    }
+
+    const filtered = getSmartProductMatches(searchTerm, 80);
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center">No se encontraron productos para esa búsqueda</td>
+            </tr>
+        `;
+        return;
+    }
     
-    tbody.innerHTML = products.map(product => `
+    tbody.innerHTML = filtered.map(product => `
         <tr>
             <td><strong>${product.name}</strong></td>
             <td>${product.category || '-'}</td>
-            <td class="text-right">RD$ ${parseFloat(product.price).toLocaleString()}</td>
+            <td class="text-right">
+                <input type="number" id="inventoryPrice_${product.id}" class="inventory-price-input" value="${parseFloat(product.price) || 0}" min="0" step="0.01">
+            </td>
             <td class="text-center">
+                <button class="btn-primary inventory-action-btn" onclick="updateProductPrice('${product.id}')">
+                    <i class="fas fa-save"></i>
+                </button>
                 <button class="btn-danger" style="padding: 6px 12px; font-size: 14px;" onclick="deleteProduct('${product.id}')">
                     <i class="fas fa-trash"></i>
                 </button>
@@ -386,13 +415,36 @@ function renderProductsTable() {
 }
 
 function searchInventory() {
-    const searchTerm = document.getElementById('searchInventory').value.toLowerCase();
-    const rows = document.querySelectorAll('#productsTable tr');
-    
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchTerm) ? '' : 'none';
-    });
+    renderProductsTable();
+}
+
+async function updateProductPrice(id) {
+    const input = document.getElementById(`inventoryPrice_${id}`);
+    if (!input) return;
+
+    const price = parseFloat(input.value);
+    if (Number.isNaN(price) || price < 0) {
+        showToast('Precio inválido', 'warning');
+        return;
+    }
+
+    try {
+        await db.collection('products').doc(id).update({
+            price: price,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        const product = products.find(p => p.id === id);
+        if (product) product.price = price;
+
+        showToast('Precio actualizado', 'success');
+        renderProductsTable();
+        populateProductModal();
+        filterAdminProductSearch();
+    } catch (error) {
+        console.error('Error actualizando precio:', error);
+        showToast('Error al actualizar precio', 'error');
+    }
 }
 
 // ============================================
@@ -491,22 +543,152 @@ function selectProduct(productId) {
 }
 
 // ============================================
-// ADMIN PRODUCT SELECT
+// ADMIN SMART PRODUCT SEARCH
 // ============================================
 
-function populateAdminProductSelect() {
-    const select = document.getElementById('adminSelectedProduct');
-    if (!select) return;
-    
-    select.innerHTML = '<option value="">-- Selecciona un producto --</option>';
-    
-    products.forEach(product => {
-        const option = document.createElement('option');
-        option.value = product.id;
-        option.textContent = `${product.name} - RD$ ${parseFloat(product.price).toLocaleString()}`;
-        select.appendChild(option);
-    });
+function normalizeSearchText(value) {
+    return (value || '')
+        .toString()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
 }
+
+function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value == null ? '' : value.toString();
+    return div.innerHTML;
+}
+
+function scoreProductMatch(product, normalizedQuery) {
+    if (!normalizedQuery) return 0;
+
+    const tokens = normalizedQuery.split(/\s+/).filter(Boolean);
+    const name = normalizeSearchText(product.name);
+    const code = normalizeSearchText(product.code);
+    const category = normalizeSearchText(product.category);
+    const description = normalizeSearchText(product.description);
+    const searchable = `${name} ${code} ${category} ${description}`;
+
+    let score = 0;
+    if (name === normalizedQuery) score += 120;
+    if (code && code === normalizedQuery) score += 110;
+    if (name.startsWith(normalizedQuery)) score += 80;
+    if (code && code.startsWith(normalizedQuery)) score += 75;
+    if (category.startsWith(normalizedQuery)) score += 35;
+    if (name.includes(normalizedQuery)) score += 45;
+    if (code && code.includes(normalizedQuery)) score += 40;
+    if (category.includes(normalizedQuery)) score += 20;
+    if (description.includes(normalizedQuery)) score += 10;
+
+    tokens.forEach(token => {
+        if (name.includes(token)) score += 18;
+        if (code.includes(token)) score += 16;
+        if (category.includes(token)) score += 8;
+        if (description.includes(token)) score += 4;
+    });
+
+    return searchable.includes(tokens[0] || normalizedQuery) ? score : 0;
+}
+
+function getSmartProductMatches(searchTerm, limit = 12) {
+    const normalizedQuery = normalizeSearchText(searchTerm);
+    if (normalizedQuery.length < 2) return [];
+
+    return products
+        .map(product => ({ ...product, _score: scoreProductMatch(product, normalizedQuery) }))
+        .filter(product => product._score > 0)
+        .sort((a, b) => b._score - a._score || (a.name || '').localeCompare(b.name || ''))
+        .slice(0, limit);
+}
+
+function filterAdminProductSearch() {
+    const input = document.getElementById('adminProductSearch');
+    const results = document.getElementById('adminProductResults');
+    if (!input || !results) return;
+
+    selectedAdminProductId = '';
+    const hiddenInput = document.getElementById('adminSelectedProduct');
+    if (hiddenInput) hiddenInput.value = '';
+
+    const searchTerm = input.value || '';
+    const matches = getSmartProductMatches(searchTerm, 10);
+
+    if (normalizeSearchText(searchTerm).length < 2) {
+        results.innerHTML = '<div class="smart-search-empty">Escribe al menos 2 caracteres para buscar productos.</div>';
+        results.classList.add('active');
+        return;
+    }
+
+    if (matches.length === 0) {
+        results.innerHTML = '<div class="smart-search-empty">No se encontraron productos con esa búsqueda.</div>';
+        results.classList.add('active');
+        return;
+    }
+
+    results.innerHTML = matches.map(product => `
+        <button type="button" class="smart-search-option" onclick="selectAdminProduct('${product.id}')">
+            <span>
+                <strong>${escapeHtml(product.name)}</strong>
+                <small>${escapeHtml(product.code || 'Sin código')} · ${escapeHtml(product.category || 'Sin categoría')}</small>
+            </span>
+            <em>RD$ ${parseFloat(product.price || 0).toLocaleString()}</em>
+        </button>
+    `).join('');
+    results.classList.add('active');
+}
+
+function selectAdminProduct(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    selectedAdminProductId = productId;
+    const hiddenInput = document.getElementById('adminSelectedProduct');
+    const searchInput = document.getElementById('adminProductSearch');
+    const results = document.getElementById('adminProductResults');
+
+    if (hiddenInput) hiddenInput.value = productId;
+    if (searchInput) searchInput.value = `${product.name} - RD$ ${parseFloat(product.price || 0).toLocaleString()}`;
+    if (results) {
+        results.innerHTML = '';
+        results.classList.remove('active');
+    }
+}
+
+function clearAdminProductSearch() {
+    selectedAdminProductId = '';
+    const hiddenInput = document.getElementById('adminSelectedProduct');
+    const searchInput = document.getElementById('adminProductSearch');
+    const results = document.getElementById('adminProductResults');
+
+    if (hiddenInput) hiddenInput.value = '';
+    if (searchInput) searchInput.value = '';
+    if (results) {
+        results.innerHTML = '<div class="smart-search-empty">Escribe al menos 2 caracteres para buscar productos.</div>';
+        results.classList.remove('active');
+    }
+}
+
+document.addEventListener('click', (event) => {
+    const searchGroup = document.querySelector('.admin-product-search-group');
+    const results = document.getElementById('adminProductResults');
+    if (searchGroup && results && !searchGroup.contains(event.target)) {
+        results.classList.remove('active');
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('adminProductSearch');
+    if (!input) return;
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        const firstOption = document.querySelector('#adminProductResults .smart-search-option');
+        if (firstOption) firstOption.click();
+    });
+});
 
 // ============================================
 // INVOICE MANAGEMENT - PUBLIC
@@ -574,11 +756,11 @@ function calculateTotals() {
 // ============================================
 
 function addProductToInvoiceAdmin() {
-    const productId = document.getElementById('adminSelectedProduct').value;
+    const productId = selectedAdminProductId || document.getElementById('adminSelectedProduct').value;
     const quantity = parseInt(document.getElementById('adminProductQuantity').value) || 1;
     
     if (!productId) {
-        showToast('Selecciona un producto', 'warning');
+        showToast('Busca y selecciona un producto', 'warning');
         return;
     }
     
@@ -596,7 +778,7 @@ function addProductToInvoiceAdmin() {
     renderAdminInvoiceProducts();
     calculateTotalsAdmin();
     
-    document.getElementById('adminSelectedProduct').value = '';
+    clearAdminProductSearch();
     document.getElementById('adminProductQuantity').value = '1';
 }
 
@@ -1516,6 +1698,8 @@ async function newInvoice() {
     document.getElementById('adminClientAddress').value = '';
     document.getElementById('adminInvoiceNumber').value = '';
     document.getElementById('adminPaymentMethod').value = '';
+    document.getElementById('adminInvoiceComment').value = '';
+    clearAdminProductSearch();
     
     renderAdminInvoiceProducts();
     calculateTotalsAdmin();
@@ -1527,6 +1711,7 @@ function saveInvoice() {
     const clientPhone = document.getElementById('adminClientPhone').value.trim();
     const invoiceNumber = document.getElementById('adminInvoiceNumber').value.trim();
     const paymentMethod = document.getElementById('adminPaymentMethod').value;
+    const comment = document.getElementById('adminInvoiceComment')?.value.trim() || '';
     
     if (!clientName || !clientDoc || !clientPhone) {
         showToast('Nombre, cédula y teléfono son obligatorios', 'warning');
@@ -1561,6 +1746,7 @@ function saveInvoice() {
         clientAddress: document.getElementById('adminClientAddress').value || '',
         invoiceNumber: invoiceNumber,
         paymentMethod: paymentMethod,
+        comment: comment,
         items: adminInvoiceItems,
         subtotal: subtotal,
         itbis: itbis,
@@ -1596,6 +1782,7 @@ function generateAdminPDF() {
     const clientAddress = document.getElementById('adminClientAddress').value || '';
     const invoiceNumber = document.getElementById('adminInvoiceNumber').value || 'FAC-001';
     const paymentMethod = document.getElementById('adminPaymentMethod').value || 'efectivo';
+    const comment = document.getElementById('adminInvoiceComment')?.value.trim() || '';
     const paymentMethods = { efectivo: 'Efectivo', transferencia: 'Transferencia', tarjeta: 'Tarjeta', credito: 'Crédito a Cliente' };
 
     const subtotal = adminInvoiceItems.reduce((sum, item) => sum + item.subtotal, 0);
@@ -1653,6 +1840,17 @@ function generateAdminPDF() {
     if (clientAddress) { y += 5; doc.text(`Dirección: ${clientAddress}`, margin, y); }
     y += 5;
     doc.text(`Método de Pago: ${paymentMethods[paymentMethod] || paymentMethod}`, margin, y);
+
+    if (comment) {
+        y += 8;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Comentario:', margin, y);
+        y += 5;
+        doc.setFont('helvetica', 'normal');
+        const commentLines = doc.splitTextToSize(comment, pageWidth - margin * 2);
+        doc.text(commentLines, margin, y);
+        y += commentLines.length * 4;
+    }
 
     y += 10;
 
@@ -1808,6 +2006,7 @@ function printInvoiceAdmin() {
     
     const invoiceNumber = document.getElementById('adminInvoiceNumber').value || 'FAC-001';
     const paymentMethod = document.getElementById('adminPaymentMethod').value || 'efectivo';
+    const comment = document.getElementById('adminInvoiceComment')?.value.trim() || '';
     const paymentMethods = {
         'efectivo': 'Efectivo',
         'transferencia': 'Transferencia',
@@ -1849,6 +2048,7 @@ function printInvoiceAdmin() {
                 .total-row.final { margin-top: 15px; padding-top: 15px; border-top: 2px solid #ef4444; }
                 .total-label.final { font-size: 16px; color: #0f172a; font-weight: 700; }
                 .total-amount.final { font-size: 20px; color: #ef4444; font-weight: 700; }
+                .comment-box { margin-bottom: 24px; padding: 14px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; line-height: 1.6; }
                 .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.8; }
                 @media print { body { padding: 0; background: white; } .no-print { display: none; } }
             </style>
@@ -1890,6 +2090,12 @@ function printInvoiceAdmin() {
                         <div class="info-value">${paymentMethods[paymentMethod]}</div>
                     </div>
                 </div>
+                ${comment ? `
+                <div class="comment-box">
+                    <div class="info-label">Comentario</div>
+                    <div class="info-value">${escapeHtml(comment)}</div>
+                </div>
+                ` : ''}
                 
                 <table>
                     <thead>
